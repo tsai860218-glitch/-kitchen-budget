@@ -483,69 +483,28 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 </div>
 <div class="toast" id="toast"></div>
 
-<script type="module">
+<script>
 // ── Data ─────────────────────────────────────────────
-// ── Firebase ─────────────────────────────────────────
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+let groceries=[],recipes=[],incomes=[],incomeCategories=[],shopList=[];
+try{groceries=JSON.parse(localStorage.getItem('kapp_g')||'[]');}catch(e){}
+try{recipes=JSON.parse(localStorage.getItem('kapp_r')||'[]');}catch(e){}
+try{incomes=JSON.parse(localStorage.getItem('kapp_i')||'[]');}catch(e){}
+try{incomeCategories=JSON.parse(localStorage.getItem('kapp_ic')||'["薪資","固定收入","額外收入","租金","投資"]');}catch(e){incomeCategories=["薪資","固定收入","額外收入","租金","投資"];}
+try{shopList=JSON.parse(localStorage.getItem('kapp_sl')||'[]');}catch(e){}
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDT-GLJvEZ9WAew1tkMd9L9ESYBSeuyv_o",
-  authDomain: "kitchen-budget.firebaseapp.com",
-  projectId: "kitchen-budget",
-  storageBucket: "kitchen-budget.firebasestorage.app",
-  messagingSenderId: "169810817679",
-  appId: "1:169810817679:web:edd11e94f7df047e1fb6fa"
-};
-const fbApp = initializeApp(firebaseConfig);
-const db = getFirestore(fbApp);
-const DATA_DOC = doc(db, 'family', 'shared');
-
-let groceries=[],recipes=[],incomes=[],incomeCategories=["薪資","固定收入","額外收入","租金","投資"],shopList=[];
 let tmpIngredients=[],tmpSteps=[''],tmpRating=0,selectedIncCat='';
 let availIngredients=[];
-let _saveTimer=null;
-let _syncing=false;
 
 const today=new Date().toISOString().split('T')[0];
 document.getElementById('g-date').value=today;
 document.getElementById('r-date').value=today;
 document.getElementById('inc-date').value=today;
 
-// 寫入 Firestore (debounce)
-function saveAll(){
-  clearTimeout(_saveTimer);
-  _saveTimer=setTimeout(async()=>{
-    try{
-      await setDoc(DATA_DOC,{groceries,recipes,incomes,incomeCategories,shopList,updatedAt:Date.now()});
-    }catch(e){toast('⚠️ 儲存失敗，請檢查網路');}
-  },600);
-}
-function saveG(){saveAll();}
-function saveR(){saveAll();}
-function saveI(){saveAll();}
-function saveIC(){saveAll();}
-function saveSL(){saveAll();}
-
-// 即時同步
-function startSync(){
-  document.getElementById('top-sub').textContent='資料同步中…';
-  onSnapshot(DATA_DOC,(snap)=>{
-    if(snap.exists()){
-      const d=snap.data();
-      groceries=d.groceries||[];
-      recipes=d.recipes||[];
-      incomes=d.incomes||[];
-      incomeCategories=d.incomeCategories||["薪資","固定收入","額外收入","租金","投資"];
-      shopList=d.shopList||[];
-    }
-    updateTopSub();
-    const active=ALL_TABS.find(id=>document.getElementById('tab-'+id).classList.contains('active'));
-    if(active)switchTab(active);
-  },(err)=>{
-    document.getElementById('top-sub').textContent='⚠️ 連線失敗';
-  });
-}
+function saveG(){localStorage.setItem('kapp_g',JSON.stringify(groceries));}
+function saveR(){localStorage.setItem('kapp_r',JSON.stringify(recipes));}
+function saveI(){localStorage.setItem('kapp_i',JSON.stringify(incomes));}
+function saveIC(){localStorage.setItem('kapp_ic',JSON.stringify(incomeCategories));}
+function saveSL(){localStorage.setItem('kapp_sl',JSON.stringify(shopList));}
 
 // ── Toast ─────────────────────────────────────────────
 let _tt;
@@ -973,16 +932,16 @@ function buildCG(name,items,canCompare){
 }
 
 // ── Backup ────────────────────────────────────────────
-function renderBackupStats(){const el=document.getElementById('backup-stats');el.innerHTML=`<b>買菜紀錄：</b>${groceries.length} 筆<br><b>料理紀錄：</b>${recipes.length} 道<br><b>收入紀錄：</b>${incomes.length} 筆<br><b>購物清單：</b>${shopList.length} 項<br><b>儲存位置：</b>Firebase 雲端（即時同步）`;}
+function renderBackupStats(){const el=document.getElementById('backup-stats');const total=((JSON.stringify(groceries).length+JSON.stringify(recipes).length+JSON.stringify(incomes).length+JSON.stringify(shopList).length)/1024).toFixed(1);el.innerHTML=`<b>買菜紀錄：</b>${groceries.length} 筆<br><b>料理紀錄：</b>${recipes.length} 道<br><b>收入紀錄：</b>${incomes.length} 筆<br><b>購物清單：</b>${shopList.length} 項<br><b>資料大小：</b>約 ${total} KB`;}
 function exportData(){const data={version:3,exportedAt:new Date().toISOString(),groceries,recipes,incomes,incomeCategories,shopList};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`廚房記帳本備份_${today}.json`;a.click();URL.revokeObjectURL(url);toast('備份檔已下載！');}
 function exportCSV(){const h='日期,品項,分類,地點,價格,數量,單位,單價,備註';const rows=groceries.map(g=>[g.date,g.name,g.cat,g.store,g.price,g.qty,g.unit,(g.qty?g.price/g.qty:g.price).toFixed(1),g.note||''].map(v=>`"${v}"`).join(','));const ih='\n\n日期,收入分類,金額,備註';const ir=incomes.map(r=>[r.date,r.cat,r.amount,r.note||''].map(v=>`"${v}"`).join(','));const rh='\n\n日期,料理名稱,類型,份數,評分,食材成本,每人成本';const rr=recipes.map(r=>[r.date,r.name,r.type,r.servings,r.rating||'',r.totalCost,r.costPerServing].map(v=>`"${v}"`).join(','));const csv='\uFEFF'+h+'\n'+rows.join('\n')+ih+'\n'+ir.join('\n')+rh+'\n'+rr.join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`廚房記帳本_${today}.csv`;a.click();URL.revokeObjectURL(url);toast('CSV 已下載！');}
 function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(!data.groceries||!data.recipes){toast('檔案格式錯誤');return;}const gIds=new Set(groceries.map(x=>x.id));const rIds=new Set(recipes.map(x=>x.id));const iIds=new Set(incomes.map(x=>x.id));const newG=data.groceries.filter(x=>!gIds.has(x.id));const newR=data.recipes.filter(x=>!rIds.has(x.id));const newI=(data.incomes||[]).filter(x=>!iIds.has(x.id));groceries=[...groceries,...newG].sort((a,b)=>b.id-a.id);recipes=[...recipes,...newR].sort((a,b)=>b.id-a.id);incomes=[...incomes,...newI].sort((a,b)=>b.id-a.id);if(data.incomeCategories){incomeCategories=[...new Set([...incomeCategories,...data.incomeCategories])];saveIC();}saveG();saveR();saveI();updateTopSub();renderBackupStats();toast(`匯入完成！+${newG.length}買菜 +${newR.length}料理 +${newI.length}收入`);}catch(err){toast('匯入失敗，請確認檔案是否正確');}input.value='';};reader.readAsText(file);}
-function confirmClear(){document.getElementById('modal-title').textContent='確定清除所有資料？';document.getElementById('modal-msg').textContent=`將刪除 ${groceries.length} 筆買菜、${recipes.length} 道料理、${incomes.length} 筆收入紀錄。此操作無法復原。`;document.getElementById('modal-confirm-btn').onclick=()=>{groceries=[];recipes=[];incomes=[];shopList=[];saveAll();closeModal();updateTopSub();renderBackupStats();toast('所有資料已清除');};document.getElementById('modal-overlay').style.display='flex';}
+function confirmClear(){document.getElementById('modal-title').textContent='確定清除所有資料？';document.getElementById('modal-msg').textContent=`將刪除 ${groceries.length} 筆買菜、${recipes.length} 道料理、${incomes.length} 筆收入紀錄。此操作無法復原。`;document.getElementById('modal-confirm-btn').onclick=()=>{groceries=[];recipes=[];incomes=[];shopList=[];saveG();saveR();saveI();saveSL();closeModal();updateTopSub();renderBackupStats();toast('所有資料已清除');};document.getElementById('modal-overlay').style.display='flex';}
 function closeModal(){document.getElementById('modal-overlay').style.display='none';}
 
 // ── Init ─────────────────────────────────────────────
 renderStepsBuilder();
-startSync();
+updateTopSub();
 </script>
 </body>
 </html>
