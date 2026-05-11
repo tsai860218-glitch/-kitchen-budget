@@ -346,6 +346,16 @@ select option{background:var(--bg2);color:var(--text)}
       </div>
       <div id="custom-store-tags" class="cat-tags"></div>
     </div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+      <div class="fg"><label>自訂品項分類</label>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input type="text" id="new-cat-emoji" placeholder="🥦" style="width:56px;flex-shrink:0;text-align:center;font-size:18px">
+          <input type="text" id="new-cat-name" placeholder="分類名稱，例：穀物、飲料" style="flex:1">
+          <button class="btn btn-sm btn-gold" onclick="addCustomCat()">新增</button>
+        </div>
+      </div>
+      <div id="custom-cat-tags" class="cat-tags"></div>
+    </div>
   </div>
 </div>
 
@@ -697,7 +707,7 @@ const db = getFirestore(fbApp);
 const DATA_DOC = doc(db, 'family', 'shared');
 
 // ── Data ─────────────────────────────────────────────
-let groceries=[],recipes=[],incomes=[],incomeCategories=["薪資","固定收入","額外收入","租金","投資"],shopList=[],inventory=[],customStores=[];
+let groceries=[],recipes=[],incomes=[],incomeCategories=["薪資","固定收入","額外收入","租金","投資"],shopList=[],inventory=[],customStores=[],customCats=[];
 let tmpIngredients=[],tmpSteps=[''],tmpRating=0,selectedIncCat='';
 let availIngredients=[];
 let _saveTimer=null,_editGId=null,_editRId=null,_editInvId=null,_editRRating=0;
@@ -712,7 +722,7 @@ function allStores(){return [...DEFAULT_STORES,...customStores];}
 function saveAll(){
   clearTimeout(_saveTimer);
   _saveTimer=setTimeout(async()=>{
-    try{await setDoc(DATA_DOC,{groceries,recipes,incomes,incomeCategories,shopList,inventory,customStores,updatedAt:Date.now()});}
+    try{await setDoc(DATA_DOC,{groceries,recipes,incomes,incomeCategories,shopList,inventory,customStores,customCats,updatedAt:Date.now()});}
     catch(e){toast('⚠️ 儲存失敗');}
   },600);
 }
@@ -726,8 +736,14 @@ function startSync(){
       groceries=d.groceries||[];recipes=d.recipes||[];incomes=d.incomes||[];
       incomeCategories=d.incomeCategories||["薪資","固定收入","額外收入","租金","投資"];
       shopList=d.shopList||[];inventory=d.inventory||[];customStores=d.customStores||[];
+      customCats=d.customCats||(d.customCats===null?[]:null)||[];
+      // First time: seed customCats from factory so user can edit them
+      if(!customCats.length&&!d.hasOwnProperty('customCats')){
+        customCats=[...FACTORY_CATS];
+      }
     }
     populateStoreSelects();
+    populateCatSelects();
     updateTopSub();
     const active=ALL_TABS.find(id=>document.getElementById('tab-'+id)?.classList.contains('active'));
     if(active)switchTab(active);
@@ -746,6 +762,78 @@ function storeClass(s){
   if(s==='大潤發')return'store-大潤發';
   if(s==='好市多')return'store-好市多';
   return'store-default';
+}
+
+const FACTORY_CATS=[
+  {emoji:'🥬',name:'蔬菜'},{emoji:'🍖',name:'肉類'},{emoji:'🐟',name:'海鮮'},
+  {emoji:'🥚',name:'蛋豆奶'},{emoji:'🍎',name:'水果'},{emoji:'🧴',name:'日用品'},{emoji:'🛒',name:'其他'}
+];
+// allCats = customCats when non-empty (user took over), else factory defaults
+function allCats(){return customCats.length>0?customCats:FACTORY_CATS;}
+
+function catOptions(){return allCats().map(c=>`<option value="${c.emoji}">${c.emoji} ${c.name}</option>`).join('');}
+function catFilterOptions(){return allCats().map(c=>`<option value="${c.emoji}">${c.emoji} ${c.name}</option>`).join('');}
+
+function populateCatSelects(){
+  const opts=catOptions();
+  ['g-cat','eg-cat'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const cur=el.value;el.innerHTML=opts;if(cur)el.value=cur;
+  });
+  // Update filter selects
+  const filterBase='<option value="">所有分類</option>'+catFilterOptions();
+  ['gfl-cat','rfl-type'].forEach(id=>{
+    // only update gfl-cat, rfl-type stays as recipe types
+  });
+  const gflCat=document.getElementById('gfl-cat');
+  if(gflCat){const cur=gflCat.value;gflCat.innerHTML='<option value="">所有分類</option>'+catFilterOptions();if(cur)gflCat.value=cur;}
+  renderCustomCatTags();
+}
+
+function renderCustomCatTags(){
+  const el=document.getElementById('custom-cat-tags');if(!el)return;
+  const cats=allCats();
+  el.innerHTML=cats.map((c,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:20px;width:28px;text-align:center">${c.emoji}</span>
+      <span style="flex:1;font-size:14px;color:var(--text)">${c.name}</span>
+      <button class="btn btn-sm" style="padding:4px 10px;font-size:12px" onclick="openEditCat(${i})">編輯</button>
+      <button class="btn btn-sm btn-danger" style="padding:4px 8px;font-size:12px" onclick="removeCustomCat(${i})">刪除</button>
+    </div>`).join('');
+}
+
+function addCustomCat(){
+  const emoji=document.getElementById('new-cat-emoji').value.trim()||'📦';
+  const name=document.getElementById('new-cat-name').value.trim();
+  if(!name){toast('請輸入分類名稱');return;}
+  if(allCats().find(c=>c.name===name)){toast('分類已存在');return;}
+  // Ensure customCats is seeded before pushing
+  if(!customCats.length)customCats=[...FACTORY_CATS];
+  customCats.push({emoji,name});
+  saveAll();populateCatSelects();
+  document.getElementById('new-cat-emoji').value='';
+  document.getElementById('new-cat-name').value='';
+  toast('已新增：'+emoji+' '+name);
+}
+
+function removeCustomCat(idx){
+  if(allCats().length<=1){toast('至少保留一個分類');return;}
+  if(!customCats.length)customCats=[...FACTORY_CATS];
+  if(!confirm(`確定刪除「${customCats[idx]?.name}」分類？`))return;
+  customCats.splice(idx,1);
+  saveAll();populateCatSelects();
+}
+
+function openEditCat(idx){
+  if(!customCats.length)customCats=[...FACTORY_CATS];
+  const c=customCats[idx];if(!c)return;
+  const newEmoji=prompt('修改 Emoji：',c.emoji);
+  if(newEmoji===null)return;
+  const newName=prompt('修改分類名稱：',c.name);
+  if(!newName||!newName.trim())return;
+  if(allCats().find((x,i)=>x.name===newName.trim()&&i!==idx)){toast('名稱已存在');return;}
+  customCats[idx]={emoji:newEmoji.trim()||c.emoji,name:newName.trim()};
+  saveAll();populateCatSelects();toast('已更新分類');
 }
 
 function populateStoreSelects(){
@@ -1440,10 +1528,10 @@ function buildCG(name,items,canCompare){
 
 // ── Backup ────────────────────────────────────────────
 function renderBackupStats(){const el=document.getElementById('backup-stats');el.innerHTML=`<b>買菜紀錄：</b>${groceries.length} 筆<br><b>料理紀錄：</b>${recipes.length} 道<br><b>收入紀錄：</b>${incomes.length} 筆<br><b>庫存：</b>${inventory.length} 項<br><b>購物清單：</b>${shopList.length} 項<br><b>儲存位置：</b>Firebase 雲端（即時同步）`;}
-function exportData(){const data={version:4,exportedAt:new Date().toISOString(),groceries,recipes,incomes,incomeCategories,shopList,inventory,customStores};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`廚房記帳本備份_${today}.json`;a.click();URL.revokeObjectURL(url);toast('備份檔已下載！');}
+function exportData(){const data={version:4,exportedAt:new Date().toISOString(),groceries,recipes,incomes,incomeCategories,shopList,inventory,customStores,customCats};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`廚房記帳本備份_${today}.json`;a.click();URL.revokeObjectURL(url);toast('備份檔已下載！');}
 function exportCSV(){const h='日期,品項,分類,地點,價格,數量,單位,單價,備註';const rows=groceries.map(g=>[g.date,g.name,g.cat,g.store,g.price,g.qty,g.unit,(g.qty?g.price/g.qty:g.price).toFixed(1),g.note||''].map(v=>`"${v}"`).join(','));const ih='\n\n日期,收入分類,金額,備註';const ir=incomes.map(r=>[r.date,r.cat,r.amount,r.note||''].map(v=>`"${v}"`).join(','));const csv='\uFEFF'+h+'\n'+rows.join('\n')+ih+'\n'+ir.join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`廚房記帳本_${today}.csv`;a.click();URL.revokeObjectURL(url);toast('CSV 已下載！');}
-function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(!data.groceries){toast('格式錯誤');return;}const gIds=new Set(groceries.map(x=>x.id));const rIds=new Set(recipes.map(x=>x.id));const iIds=new Set(incomes.map(x=>x.id));const newG=data.groceries.filter(x=>!gIds.has(x.id));const newR=(data.recipes||[]).filter(x=>!rIds.has(x.id));const newI=(data.incomes||[]).filter(x=>!iIds.has(x.id));groceries=[...groceries,...newG].sort((a,b)=>b.id-a.id);recipes=[...recipes,...newR].sort((a,b)=>b.id-a.id);incomes=[...incomes,...newI].sort((a,b)=>b.id-a.id);if(data.incomeCategories)incomeCategories=[...new Set([...incomeCategories,...data.incomeCategories])];if(data.inventory)inventory=[...inventory,...(data.inventory||[]).filter(x=>!inventory.find(i=>i.id===x.id))];if(data.customStores)customStores=[...new Set([...customStores,...data.customStores])];saveAll();updateTopSub();renderBackupStats();toast(`匯入完成！+${newG.length}買菜 +${newR.length}料理 +${newI.length}收入`);}catch(err){toast('匯入失敗');}input.value='';};reader.readAsText(file);}
-function confirmClear(){document.getElementById('modal-title').textContent='確定清除所有資料？';document.getElementById('modal-msg').textContent=`將刪除 ${groceries.length} 筆買菜、${recipes.length} 道料理、${incomes.length} 筆收入、${inventory.length} 項庫存。此操作無法復原。`;document.getElementById('modal-confirm-btn').onclick=()=>{groceries=[];recipes=[];incomes=[];shopList=[];inventory=[];customStores=[];saveAll();closeModal();updateTopSub();renderBackupStats();toast('所有資料已清除');};document.getElementById('modal-overlay').style.display='flex';}
+function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(!data.groceries){toast('格式錯誤');return;}const gIds=new Set(groceries.map(x=>x.id));const rIds=new Set(recipes.map(x=>x.id));const iIds=new Set(incomes.map(x=>x.id));const newG=data.groceries.filter(x=>!gIds.has(x.id));const newR=(data.recipes||[]).filter(x=>!rIds.has(x.id));const newI=(data.incomes||[]).filter(x=>!iIds.has(x.id));groceries=[...groceries,...newG].sort((a,b)=>b.id-a.id);recipes=[...recipes,...newR].sort((a,b)=>b.id-a.id);incomes=[...incomes,...newI].sort((a,b)=>b.id-a.id);if(data.incomeCategories)incomeCategories=[...new Set([...incomeCategories,...data.incomeCategories])];if(data.inventory)inventory=[...inventory,...(data.inventory||[]).filter(x=>!inventory.find(i=>i.id===x.id))];if(data.customStores)customStores=[...new Set([...customStores,...data.customStores])];if(data.customCats){const existEmojis=new Set(customCats.map(c=>c.emoji));customCats=[...customCats,...(data.customCats||[]).filter(c=>!existEmojis.has(c.emoji))];}saveAll();updateTopSub();renderBackupStats();toast(`匯入完成！+${newG.length}買菜 +${newR.length}料理 +${newI.length}收入`);}catch(err){toast('匯入失敗');}input.value='';};reader.readAsText(file);}
+function confirmClear(){document.getElementById('modal-title').textContent='確定清除所有資料？';document.getElementById('modal-msg').textContent=`將刪除 ${groceries.length} 筆買菜、${recipes.length} 道料理、${incomes.length} 筆收入、${inventory.length} 項庫存。此操作無法復原。`;document.getElementById('modal-confirm-btn').onclick=()=>{groceries=[];recipes=[];incomes=[];shopList=[];inventory=[];customStores=[];customCats=[];saveAll();closeModal();updateTopSub();renderBackupStats();toast('所有資料已清除');};document.getElementById('modal-overlay').style.display='flex';}
 
 // ── Modal ─────────────────────────────────────────────
 function closeModal(){document.getElementById('modal-overlay').style.display='none';}
@@ -1465,13 +1553,14 @@ function initTheme(){
 
 // ── Expose to window ──────────────────────────────────
 const expose=['switchTab','addGrocery','renderGroceries','openEditG','closeEditG','saveEditG','deleteEditG','addShopItem','quickAddToList','toggleShopItem','removeShopItem','clearDoneItems','clearAllItems','addInventory','openEditInv','closeEditInv','saveEditInv','deleteEditInv','setRating','setEditRating','addIngredient','addManualIngredient','removeIngredient','addStep','removeStep','addRecipe','changeServings','toggleRecipe','delRecipe','openEditR','closeEditR','saveEditR','deleteEditR','addAvailIngr','removeAvailIngr','selectIncCat','addIncomeCategory','removeIncCat','addIncome','delIncome','renderIncomes','renderRecipes','renderGroceries','exportData','exportCSV','importData','confirmClear','closeModal','toast','addCustomStore','removeCustomStore'];
-expose.push('toggleTheme','initTheme');
+expose.push('toggleTheme','initTheme','addCustomCat','removeCustomCat','openEditCat');
 expose.forEach(fn=>{if(typeof eval(fn)==='function')window[fn]=eval(fn);});
 
 // ── Init ─────────────────────────────────────────────
 initTheme();
 renderStepsBuilder();
 populateStoreSelects();
+populateCatSelects();
 startSync();
 </script>
 </body>
