@@ -359,6 +359,16 @@ select option{background:var(--bg2);color:var(--text)}
   <div class="filter-row">
     <select class="fsel" id="gfl-store" onchange="renderGroceries()"><option value="">所有地點</option></select>
     <select class="fsel" id="gfl-cat" onchange="renderGroceries()"><option value="">所有分類</option><option value="🥬">🥬 蔬菜</option><option value="🍖">🍖 肉類</option><option value="🐟">🐟 海鮮</option><option value="🥚">🥚 蛋豆奶</option><option value="🍎">🍎 水果</option><option value="🧴">🧴 日用品</option><option value="🛒">🛒 其他</option></select>
+    <select class="fsel" id="gfl-sort" onchange="renderGroceries()">
+      <option value="date-desc">最新優先</option>
+      <option value="date-asc">最舊優先</option>
+      <option value="price-desc">價格高→低</option>
+      <option value="price-asc">價格低→高</option>
+      <option value="name-asc">名稱 A→Z</option>
+    </select>
+  </div>
+  <div style="margin-bottom:10px">
+    <input type="text" id="gfl-search" placeholder="🔍 搜尋品項名稱…" oninput="renderGroceries()" style="font-size:14px">
   </div>
   <div class="list" id="grocery-list"></div>
 </div>
@@ -467,6 +477,16 @@ select option{background:var(--bg2);color:var(--text)}
   <div class="filter-row">
     <select class="fsel" id="rfl-type" onchange="renderRecipes()"><option value="">所有類型</option><option value="🥗">🥗 蔬食</option><option value="🍳">🍳 蛋料理</option><option value="🥩">🥩 肉類</option><option value="🐟">🐟 海鮮</option><option value="🍜">🍜 麵飯</option><option value="🍲">🍲 湯品</option><option value="🥘">🥘 其他</option></select>
     <select class="fsel" id="rfl-rating" onchange="renderRecipes()"><option value="">所有評分</option><option value="5">★★★★★</option><option value="4">★★★★</option><option value="3">★★★</option></select>
+    <select class="fsel" id="rfl-sort" onchange="renderRecipes()">
+      <option value="date-desc">最新優先</option>
+      <option value="date-asc">最舊優先</option>
+      <option value="cost-desc">成本高→低</option>
+      <option value="cost-asc">成本低→高</option>
+      <option value="rating-desc">評分高→低</option>
+    </select>
+  </div>
+  <div style="margin-bottom:10px">
+    <input type="text" id="rfl-search" placeholder="🔍 搜尋料理名稱…" oninput="renderRecipes()" style="font-size:14px">
   </div>
   <div id="recipe-list" class="list"></div>
 </div>
@@ -854,14 +874,12 @@ function renderDashboard(){
     </div>
     <div class="card">
       <div class="card-title">本週買菜花費</div>
-      <div class="week-row">
-        ${weekData.map(d=>`<div class="week-day">
-          <div class="week-day-label">${d.label}</div>
-          <div class="week-day-bar"><div class="week-bar${d.isToday?' today':''}" style="height:${Math.round(d.total/maxWeek*36)+2}px"></div></div>
-          <div class="week-day-val">${d.total?'$'+d.total:'—'}</div>
-        </div>`).join('')}
-      </div>
+      ${renderWeekCurve(weekData)}
       <div style="text-align:right;font-size:12px;color:var(--text2);font-family:var(--mono);margin-top:8px">本週合計 <span style="color:var(--gold);font-weight:700">$${weekTotal.toLocaleString()}</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">本月各分類佔比</div>
+      ${renderCatPieHTML(mG)}
     </div>
     ${lowInv.length?`<div class="card"><div class="card-title">⚠️ 庫存不足</div>${lowInv.map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:14px;color:var(--text)">${i.name}</span><span style="font-size:13px;color:var(--rust);font-family:var(--mono)">剩 ${i.qty}${i.unit}</span></div>`).join('')}</div>`:''}
     ${expSoon.length?`<div class="card"><div class="card-title">⏰ 即將到期（3天內）</div>${expSoon.map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:14px;color:var(--text)">${i.name}</span><span style="font-size:13px;color:var(--amber);font-family:var(--mono)">${i.expiry}</span></div>`).join('')}</div>`:''}
@@ -895,16 +913,35 @@ function updateGroceryStats(){
   document.getElementById('gs-store').textContent=top?top[0]:'-';
 }
 function renderGroceries(){
-  const storeF=document.getElementById('gfl-store').value,catF=document.getElementById('gfl-cat').value;
+  const storeF=document.getElementById('gfl-store').value;
+  const catF=document.getElementById('gfl-cat').value;
+  const sortF=document.getElementById('gfl-sort')?.value||'date-desc';
+  const searchF=(document.getElementById('gfl-search')?.value||'').trim().toLowerCase();
   const stores=[...new Set(groceries.map(r=>r.store))];
   const sel=document.getElementById('gfl-store');const cur=sel.value;
   sel.innerHTML='<option value="">所有地點</option>'+stores.map(s=>`<option value="${s}"${s===cur?' selected':''}>${s}</option>`).join('');
-  const filtered=groceries.filter(r=>(!storeF||r.store===storeF)&&(!catF||r.cat===catF));
+  let filtered=groceries.filter(r=>
+    (!storeF||r.store===storeF)&&
+    (!catF||r.cat===catF)&&
+    (!searchF||r.name.toLowerCase().includes(searchF)||r.note?.toLowerCase().includes(searchF))
+  );
+  // Sort
+  filtered=[...filtered].sort((a,b)=>{
+    if(sortF==='date-desc')return b.id-a.id;
+    if(sortF==='date-asc')return a.id-b.id;
+    if(sortF==='price-desc')return b.price-a.price;
+    if(sortF==='price-asc')return a.price-b.price;
+    if(sortF==='name-asc')return a.name.localeCompare(b.name,'zh-TW');
+    return 0;
+  });
   const el=document.getElementById('grocery-list');
-  if(!filtered.length){el.innerHTML=`<div class="empty"><span class="empty-icon">🛒</span><span class="empty-text">尚無買菜紀錄</span><span class="empty-hint">點下方「買菜」頁籤<br>開始記錄第一筆</span></div>`;return;}
+  if(!filtered.length){
+    el.innerHTML=`<div class="empty"><span class="empty-icon">🛒</span><span class="empty-text">${searchF?'找不到符合的紀錄':'尚無買菜紀錄'}</span><span class="empty-hint">${searchF?'試試其他關鍵字':'點下方「買菜」頁籤開始記錄'}</span></div>`;return;
+  }
   el.innerHTML=filtered.map(r=>{
     const cls=storeClass(r.store);const up=r.qty?(r.price/r.qty).toFixed(1):'-';
-    return `<div class="ri" onclick="openEditG(${r.id})" style="cursor:pointer"><div class="ri-icon" style="background:var(--glass3)">${r.cat}</div><div class="ri-main"><div class="ri-name">${r.name}${r.note?` <span style="font-weight:400;color:var(--text2);font-size:12px">(${r.note})</span>`:''}</div><div class="ri-meta">${r.date} · ${r.qty}${r.unit}</div><span class="ri-badge ${cls}">${r.store}</span></div><div class="ri-right"><div class="ri-price">$${r.price}</div><div class="ri-unit">$${up}/${r.unit}</div></div><span style="color:var(--text3);font-size:14px;padding-left:4px">›</span></div>`;
+    const nameHtml=searchF?r.name.replace(new RegExp(searchF,'gi'),m=>`<mark style="background:var(--gold-dim);color:var(--gold);border-radius:2px">${m}</mark>`):r.name;
+    return `<div class="ri" onclick="openEditG(${r.id})" style="cursor:pointer"><div class="ri-icon" style="background:var(--glass3)">${r.cat}</div><div class="ri-main"><div class="ri-name">${nameHtml}${r.note?` <span style="font-weight:400;color:var(--text2);font-size:12px">(${r.note})</span>`:''}</div><div class="ri-meta">${r.date} · ${r.qty}${r.unit}</div><span class="ri-badge ${cls}">${r.store}</span></div><div class="ri-right"><div class="ri-price">$${r.price}</div><div class="ri-unit">$${up}/${r.unit}</div></div><span style="color:var(--text3);font-size:14px;padding-left:4px">›</span></div>`;
   }).join('');
 }
 
@@ -1099,9 +1136,23 @@ function updateRecipeStats(){
 function renderRecipes(){
   const typeF=document.getElementById('rfl-type').value;
   const ratingF=document.getElementById('rfl-rating').value;
-  const filtered=recipes.filter(r=>(!typeF||r.type===typeF)&&(!ratingF||r.rating>=parseInt(ratingF)));
+  const sortF=document.getElementById('rfl-sort')?.value||'date-desc';
+  const searchF=(document.getElementById('rfl-search')?.value||'').trim().toLowerCase();
+  let filtered=recipes.filter(r=>
+    (!typeF||r.type===typeF)&&
+    (!ratingF||r.rating>=parseInt(ratingF))&&
+    (!searchF||r.name.toLowerCase().includes(searchF))
+  );
+  filtered=[...filtered].sort((a,b)=>{
+    if(sortF==='date-desc')return b.id-a.id;
+    if(sortF==='date-asc')return a.id-b.id;
+    if(sortF==='cost-desc')return b.totalCost-a.totalCost;
+    if(sortF==='cost-asc')return a.totalCost-b.totalCost;
+    if(sortF==='rating-desc')return(b.rating||0)-(a.rating||0);
+    return 0;
+  });
   const el=document.getElementById('recipe-list');
-  if(!filtered.length){el.innerHTML=`<div class="empty"><span class="empty-icon">🍳</span><span class="empty-text">尚無料理紀錄</span><span class="empty-hint">點下方「料理」頁籤<br>記錄你做的第一道菜</span></div>`;return;}
+  if(!filtered.length){el.innerHTML=`<div class="empty"><span class="empty-icon">🍳</span><span class="empty-text">${searchF?'找不到符合的料理':'尚無料理紀錄'}</span><span class="empty-hint">${searchF?'試試其他關鍵字':'點下方「料理」頁籤開始記錄'}</span></div>`;return;}
   el.innerHTML=filtered.map(r=>{
     const exp=expandedRecipes.has(r.id);
     const sv=recipeServings[r.id]||r.servings;
@@ -1249,6 +1300,68 @@ function renderIncomeBreakdown(){
   const total=Object.values(bycat).reduce((a,v)=>a+v,0);
   const rows=Object.entries(bycat).sort((a,b)=>b[1]-a[1]);const maxVal=rows[0][1];
   el.innerHTML=rows.map(([cat,amt])=>`<div class="income-bar-row"><span class="income-bar-label">${cat}</span><div class="income-bar" style="width:${Math.round(amt/maxVal*148)}px"></div><span class="income-bar-val">$${amt.toLocaleString()} <span style="color:var(--text2);font-size:10px">${Math.round(amt/total*100)}%</span></span></div>`).join('');
+}
+
+// ── Week curve helper (reusable) ────────────────────
+function renderWeekCurve(weekData){
+  const W=340,H=100,padL=6,padR=6,padT=22,padB=22;
+  const cW=W-padL-padR,cH=H-padT-padB,n=weekData.length;
+  const maxVal=Math.max(...weekData.map(d=>d.total),1);
+  const pts=weekData.map((d,i)=>({
+    x:padL+i*(cW/(n-1)),
+    y:padT+cH-(d.total/maxVal*cH),
+    total:d.total,label:d.label,isToday:d.isToday
+  }));
+  function bez(pts){let p=`M${pts[0].x},${pts[0].y}`;for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],cx=(a.x+b.x)/2;p+=` C${cx},${a.y} ${cx},${b.y} ${b.x},${b.y}`;}return p;}
+  const path=bez(pts);
+  const fill=path+` L${pts[n-1].x},${padT+cH} L${pts[0].x},${padT+cH} Z`;
+  const dots=pts.map(p=>`
+    <circle cx="${p.x}" cy="${p.y}" r="${p.isToday?5:3}" fill="${p.isToday?'var(--gold)':'var(--bg1)'}" stroke="${p.isToday?'var(--gold)':'rgba(227,168,74,.5)'}" stroke-width="1.5"/>
+    ${p.total>0?`<text x="${p.x}" y="${p.y-8}" text-anchor="middle" font-size="9" fill="${p.isToday?'var(--gold)':'var(--text2)'}" font-family="monospace" font-weight="${p.isToday?700:400}">$${p.total}</text>`:''}
+    <text x="${p.x}" y="${H-4}" text-anchor="middle" font-size="10" fill="${p.isToday?'var(--gold)':'var(--text2)'}" font-family="monospace" font-weight="${p.isToday?700:400}">${p.label}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="overflow:visible">
+    <defs><linearGradient id="wFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--gold)" stop-opacity="0.2"/><stop offset="100%" stop-color="var(--gold)" stop-opacity="0.01"/></linearGradient></defs>
+    <path d="${fill}" fill="url(#wFill)"/>
+    <path d="${path}" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round"/>
+    ${dots}
+  </svg>`;
+}
+
+// ── Category pie chart helper ────────────────────────
+function renderCatPieHTML(items){
+  const CAT_LABELS={'🥬':'蔬菜','🍖':'肉類','🐟':'海鮮','🥚':'蛋豆奶','🍎':'水果','🧴':'日用品','🛒':'其他'};
+  const CAT_COLORS={'🥬':'#3fb950','🍖':'#f85149','🐟':'#58a6ff','🥚':'#e3a84a','🍎':'#bc8cff','🧴':'#8b949e','🛒':'#484f58'};
+  const bycat={};items.forEach(g=>{bycat[g.cat]=(bycat[g.cat]||0)+g.price;});
+  if(!Object.keys(bycat).length)return'<div style="color:var(--text2);font-size:13px;font-family:var(--mono)">本月尚無買菜紀錄</div>';
+  const total=Object.values(bycat).reduce((a,v)=>a+v,0);
+  const rows=Object.entries(bycat).sort((a,b)=>b[1]-a[1]);
+  const R=60,cx=70,cy=70;
+  let startAngle=-Math.PI/2;
+  const slices=rows.map(([cat,val])=>{
+    const angle=(val/total)*2*Math.PI;
+    const x1=cx+R*Math.cos(startAngle),y1=cy+R*Math.sin(startAngle);
+    startAngle+=angle;
+    const x2=cx+R*Math.cos(startAngle),y2=cy+R*Math.sin(startAngle);
+    const large=angle>Math.PI?1:0;
+    const color=CAT_COLORS[cat]||'#8b949e';
+    const path=`M${cx},${cy} L${x1},${y1} A${R},${R} 0 ${large} 1 ${x2},${y2} Z`;
+    return{path,color,cat,val,pct:Math.round(val/total*100)};
+  });
+  const svgSlices=slices.map(s=>`<path d="${s.path}" fill="${s.color}" stroke="var(--bg1)" stroke-width="1.5" opacity="0.9"/>`).join('');
+  const legend=rows.map(([cat,val])=>{
+    const pct=Math.round(val/total*100);
+    const color=CAT_COLORS[cat]||'#8b949e';
+    return`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+      <div style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></div>
+      <span style="font-size:13px;flex:1;color:var(--text)">${cat} ${CAT_LABELS[cat]||cat}</span>
+      <span style="font-size:12px;font-family:var(--mono);color:var(--text2)">${pct}%</span>
+      <span style="font-size:12px;font-family:var(--mono);color:var(--text2);min-width:48px;text-align:right">$${val.toLocaleString()}</span>
+    </div>`;
+  }).join('');
+  return`<div style="display:flex;align-items:center;gap:16px">
+    <svg viewBox="0 0 140 140" width="120" height="120" style="flex-shrink:0">${svgSlices}</svg>
+    <div style="flex:1">${legend}</div>
+  </div>`;
 }
 
 // ── Insights ──────────────────────────────────────────
