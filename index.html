@@ -6,213 +6,275 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="廚房記帳">
-<meta name="theme-color" content="#0f0e0c">
+<meta name="theme-color" content="#0d1117">
 <title>廚房記帳本</title>
-
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --ink:#0f0e0c;--ink2:#3d3b36;--ink3:#7a7870;--ink4:#b5b2a8;
-  --paper:#faf8f4;--paper2:#f2efe8;--paper3:#e8e4da;
-  --gold:#c8962a;--gold-bg:#fdf3dc;--gold-text:#7a5510;
-  --sage:#4a7c59;--sage-bg:#e8f0eb;--sage-text:#2a4f38;
-  --rust:#b54a2a;--rust-bg:#faeae4;--rust-text:#7a2a12;
-  --slate:#3a5a8a;--slate-bg:#e4edf8;--slate-text:#1a3a6a;
-  --plum:#6a3a7a;--plum-bg:#f0e8f4;--plum-text:#3a1a4a;
-  --r:14px;--rs:10px;
-  --serif:-apple-system,BlinkMacSystemFont,'PingFang TC','Microsoft JhengHei',sans-serif;--mono:'SF Mono','Courier New',monospace;
-  --shadow:0 1px 3px rgba(15,14,12,.08),0 4px 12px rgba(15,14,12,.06);
-  --shadow-md:0 2px 8px rgba(15,14,12,.10),0 8px 24px rgba(15,14,12,.08);
+  --bg1:#0d1117;--bg2:#161b22;--bg3:#1c2128;
+  --glass:rgba(255,255,255,.07);--glass2:rgba(255,255,255,.12);--glass3:rgba(255,255,255,.04);
+  --border:rgba(255,255,255,.1);--border2:rgba(255,255,255,.18);
+  --text:#e6edf3;--text2:#8b949e;--text3:#484f58;
+  --gold:#e3a84a;--gold-dim:rgba(227,168,74,.15);--gold-glow:rgba(227,168,74,.3);
+  --sage:#3fb950;--sage-dim:rgba(63,185,80,.15);
+  --rust:#f85149;--rust-dim:rgba(248,81,73,.15);
+  --slate:#58a6ff;--slate-dim:rgba(88,166,255,.15);
+  --plum:#bc8cff;--plum-dim:rgba(188,140,255,.15);
+  --amber:#e3a84a;
+  --r:16px;--rs:10px;
+  --font:-apple-system,BlinkMacSystemFont,'PingFang TC','Microsoft JhengHei',sans-serif;
+  --mono:'SF Mono','Courier New',monospace;
+  --blur:blur(20px) saturate(180%);
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+  --shadow-lg:0 8px 40px rgba(0,0,0,.6);
 }
-body{font-family:var(--serif);background:var(--paper2);color:var(--ink);min-height:100vh;padding-bottom:90px}
-/* Topbar */
-.topbar{background:var(--ink);padding:16px 20px 12px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between}
-.topbar h1{font-size:20px;font-weight:600;color:var(--paper);letter-spacing:-.02em}
-.topbar h1 em{color:var(--gold);font-style:normal;font-weight:400}
-.topbar-sub{font-size:10px;color:var(--ink4);font-family:var(--mono);letter-spacing:.03em;margin-top:2px}
-/* Bottom nav */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--ink);display:flex;padding:6px 0 calc(6px + env(safe-area-inset-bottom));z-index:100;border-top:1px solid rgba(255,255,255,.06);overflow-x:auto}
+body{font-family:var(--font);background:var(--bg1);color:var(--text);min-height:100vh;padding-bottom:88px;background-image:radial-gradient(ellipse at 20% 20%,rgba(227,168,74,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(88,166,255,.06) 0%,transparent 50%)}
+
+/* ── Topbar ── */
+.topbar{background:rgba(13,17,23,.8);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);padding:16px 20px 12px;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border)}
+.topbar h1{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.03em}
+.topbar h1 em{color:var(--gold);font-style:normal}
+.topbar-sub{font-size:10px;color:var(--text2);font-family:var(--mono);margin-top:3px;letter-spacing:.03em}
+
+/* ── Bottom nav ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(13,17,23,.9);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);display:flex;padding:6px 0 calc(6px + env(safe-area-inset-bottom));z-index:100;border-top:1px solid var(--border);overflow-x:auto}
 .bottom-nav::-webkit-scrollbar{display:none}
-.nav-item{flex:0 0 calc(100%/9);min-width:52px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 2px;cursor:pointer;border:none;background:none;color:var(--ink4);transition:color .18s}
+.nav-item{flex:0 0 calc(100%/11);min-width:46px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 2px;cursor:pointer;border:none;background:none;color:var(--text3);transition:color .18s}
 .nav-item.active{color:var(--gold)}
-.nav-icon{font-size:18px;line-height:1}
-.nav-label{font-size:9px;font-family:var(--mono);letter-spacing:.02em;white-space:nowrap}
-/* Sections */
+.nav-icon{font-size:17px;line-height:1}
+.nav-label{font-size:9px;font-family:var(--mono);white-space:nowrap}
+
+/* ── Sections ── */
 .section{display:none;padding:14px 14px 0;animation:fadeUp .2s ease}
 .section.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-/* Cards */
-.card{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
-.card-title{font-size:10px;font-weight:500;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;font-family:var(--mono);display:flex;align-items:center;gap:6px}
-.card-title::before{content:'';display:block;width:3px;height:11px;background:var(--gold);border-radius:2px}
-/* Stats */
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Glass cards ── */
+.card{background:var(--glass);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.card-title{font-size:10px;font-weight:600;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;font-family:var(--mono);display:flex;align-items:center;gap:7px}
+.card-title::before{content:'';display:block;width:3px;height:12px;background:linear-gradient(180deg,var(--gold),var(--amber));border-radius:2px;box-shadow:0 0 8px var(--gold-glow)}
+
+/* ── Hero cards ── */
+.hero-glass{background:linear-gradient(135deg,rgba(227,168,74,.12) 0%,rgba(227,168,74,.04) 100%);border:1px solid rgba(227,168,74,.25);border-radius:var(--r);padding:20px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(227,168,74,.08)}
+.hero-glass::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(227,168,74,.12) 0%,transparent 60%);pointer-events:none}
+
+/* ── Stats grid ── */
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:12px}
-.stat{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--rs);padding:11px 8px;text-align:center;box-shadow:var(--shadow)}
-.stat-label{font-size:10px;color:var(--ink3);margin-bottom:3px;font-family:var(--mono);letter-spacing:.03em}
-.stat-val{font-size:18px;font-weight:600;letter-spacing:-.02em}
+.stat{background:var(--glass3);border:1px solid var(--border);border-radius:var(--rs);padding:12px 8px;text-align:center}
+.stat-label{font-size:10px;color:var(--text2);margin-bottom:3px;font-family:var(--mono);letter-spacing:.03em}
+.stat-val{font-size:18px;font-weight:700;letter-spacing:-.03em;color:var(--text)}
 .stat-val.sm{font-size:12px;margin-top:2px}
-/* Forms */
+
+/* ── Forms ── */
 .fg{margin-bottom:12px}
-label{display:block;font-size:10px;color:var(--ink3);margin-bottom:5px;font-family:var(--mono);letter-spacing:.05em;text-transform:uppercase}
-input[type=text],input[type=number],input[type=date],select,textarea{width:100%;padding:10px 13px;border:1px solid var(--paper3);border-radius:var(--rs);background:var(--paper2);color:var(--ink);font-size:15px;font-family:var(--serif);appearance:none;-webkit-appearance:none;transition:border-color .15s,box-shadow .15s}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,150,42,.12)}
+label{display:block;font-size:10px;color:var(--text2);margin-bottom:5px;font-family:var(--mono);letter-spacing:.05em;text-transform:uppercase}
+input[type=text],input[type=number],input[type=date],select,textarea{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--rs);background:rgba(255,255,255,.06);color:var(--text);font-size:15px;font-family:var(--font);appearance:none;-webkit-appearance:none;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
 textarea{resize:none;line-height:1.6}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%23b5b2a8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%238b949e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+select option{background:var(--bg2);color:var(--text)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-/* Buttons */
-.btn{padding:9px 15px;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;border:1px solid var(--paper3);background:var(--paper2);color:var(--ink);font-family:var(--serif);transition:all .15s}
+
+/* ── Buttons ── */
+.btn{padding:9px 15px;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--glass);color:var(--text);font-family:var(--font);transition:all .15s}
 .btn:active{opacity:.7;transform:scale(.98)}
-.btn-primary{width:100%;padding:14px;background:var(--ink);color:var(--paper);border:none;border-radius:var(--rs);font-size:15px;font-weight:600;cursor:pointer;margin-top:6px;font-family:var(--serif);transition:all .15s;position:relative;overflow:hidden}
-.btn-primary::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,150,42,.1) 0%,transparent 60%)}
+.btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,rgba(227,168,74,.9),rgba(200,140,40,.9));color:#0d1117;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;font-family:var(--font);transition:all .15s;box-shadow:0 4px 20px var(--gold-dim)}
 .btn-primary:active{opacity:.85;transform:scale(.99)}
 .btn-sm{padding:7px 12px;font-size:13px}
-.btn-danger{border-color:var(--rust-bg);color:var(--rust);background:var(--rust-bg)}
-.btn-export{background:var(--sage-bg);color:var(--sage-text);border-color:var(--sage-bg);font-weight:500}
-.btn-import-csv{background:var(--slate-bg);color:var(--slate-text);border-color:var(--slate-bg);font-weight:500}
+.btn-danger{border-color:var(--rust-dim);color:var(--rust);background:var(--rust-dim)}
+.btn-sage{background:var(--sage-dim);color:var(--sage);border-color:var(--sage-dim);font-weight:500}
+.btn-slate{background:var(--slate-dim);color:var(--slate);border-color:var(--slate-dim);font-weight:500}
+.btn-gold{background:var(--gold-dim);color:var(--gold);border-color:rgba(227,168,74,.3);font-weight:500}
 .backup-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-/* Filter */
+
+/* ── Filter pills ── */
 .filter-row{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
 .filter-row::-webkit-scrollbar{display:none}
-.fsel{padding:6px 26px 6px 11px;border:1px solid var(--paper3);border-radius:99px;background:var(--paper);color:var(--ink);font-size:12px;flex-shrink:0;appearance:none;-webkit-appearance:none;font-family:var(--mono);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6'%3E%3Cpath d='M1 1l3.5 3.5L8 1' stroke='%23b5b2a8' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
-/* List items */
+.fsel{padding:6px 26px 6px 11px;border:1px solid var(--border);border-radius:99px;background:var(--glass3);color:var(--text);font-size:12px;flex-shrink:0;appearance:none;-webkit-appearance:none;font-family:var(--mono);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6'%3E%3Cpath d='M1 1l3.5 3.5L8 1' stroke='%238b949e' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.fsel option{background:var(--bg2)}
+
+/* ── List items ── */
 .list{display:flex;flex-direction:column;gap:8px;padding-bottom:8px}
-.ri{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--r);padding:12px 13px;display:flex;align-items:center;gap:11px;box-shadow:var(--shadow)}
+.ri{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:12px 13px;display:flex;align-items:center;gap:11px;transition:border-color .15s,background .15s}
+.ri:active{background:var(--glass2)}
 .ri-icon{width:40px;height:40px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .ri-main{flex:1;min-width:0}
-.ri-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ri-meta{font-size:11px;color:var(--ink3);margin-top:2px;font-family:var(--mono)}
-.ri-badge{display:inline-block;padding:2px 7px;border-radius:99px;font-size:10px;margin-top:4px;font-weight:500;font-family:var(--mono)}
+.ri-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.ri-meta{font-size:11px;color:var(--text2);margin-top:2px;font-family:var(--mono)}
+.ri-badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;margin-top:4px;font-weight:600;font-family:var(--mono)}
 .ri-right{text-align:right;flex-shrink:0}
-.ri-price{font-size:15px;font-weight:600;letter-spacing:-.02em}
-.ri-unit{font-size:11px;color:var(--ink3);margin-top:1px;font-family:var(--mono)}
-.btn-del{background:none;border:none;cursor:pointer;color:var(--ink4);font-size:18px;padding:4px 2px;flex-shrink:0;transition:color .15s}
-.btn-del:hover{color:var(--rust)}
-/* Recipe */
-.recipe-card{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--r);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
+.ri-price{font-size:15px;font-weight:700;letter-spacing:-.02em;color:var(--text)}
+.ri-unit{font-size:11px;color:var(--text2);margin-top:1px;font-family:var(--mono)}
+
+/* ── Recipe cards ── */
+.recipe-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
 .recipe-header{padding:13px 14px;display:flex;align-items:center;gap:11px;cursor:pointer}
-.recipe-icon{width:42px;height:42px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:21px;background:var(--gold-bg);flex-shrink:0}
-.recipe-title{font-size:15px;font-weight:500;letter-spacing:-.01em}
-.recipe-meta{font-size:11px;color:var(--ink3);margin-top:2px;font-family:var(--mono)}
-.recipe-cost-val{font-size:15px;font-weight:600;color:var(--sage);letter-spacing:-.02em}
-.recipe-cost-sub{font-size:10px;color:var(--ink3);font-family:var(--mono);margin-top:1px;text-align:right}
-.recipe-body{padding:0 14px 13px;border-top:1px solid var(--paper3)}
+.recipe-icon{width:44px;height:44px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--gold-dim);flex-shrink:0}
+.recipe-title{font-size:15px;font-weight:600;color:var(--text)}
+.recipe-meta{font-size:11px;color:var(--text2);margin-top:2px;font-family:var(--mono)}
+.recipe-cost-val{font-size:15px;font-weight:700;color:var(--sage)}
+.recipe-cost-sub{font-size:10px;color:var(--text2);font-family:var(--mono);margin-top:1px;text-align:right}
+.recipe-body{padding:0 14px 13px;border-top:1px solid var(--border)}
 .recipe-section{margin-top:12px}
-.rs-title{font-size:10px;font-weight:500;color:var(--ink3);margin-bottom:7px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--mono)}
-.ingr-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:14px}
+.rs-title{font-size:10px;font-weight:600;color:var(--text2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--mono)}
+.ingr-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:14px;color:var(--text)}
 .ingr-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);flex-shrink:0}
 .step-row{display:flex;gap:10px;margin-bottom:8px}
-.step-num{width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--paper);font-size:11px;font-weight:600;font-family:var(--mono);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-.step-text{font-size:14px;line-height:1.7}
-.expand-toggle{padding:8px 14px;font-size:11px;color:var(--ink3);text-align:center;border-top:1px solid var(--paper3);background:var(--paper2);width:100%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;font-family:var(--mono);letter-spacing:.03em}
-/* Stars */
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--gold-dim);border:1px solid rgba(227,168,74,.3);color:var(--gold);font-size:11px;font-weight:700;font-family:var(--mono);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-text{font-size:14px;line-height:1.7;color:var(--text)}
+.expand-toggle{padding:8px 14px;font-size:11px;color:var(--text2);text-align:center;border-top:1px solid var(--border);background:var(--glass3);width:100%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;font-family:var(--mono)}
+
+/* ── Stars ── */
 .stars{display:flex;gap:4px;margin-top:4px}
-.star{font-size:16px;cursor:pointer;opacity:.3;transition:opacity .15s}
-.star.on{opacity:1}
-/* Ingredient builder */
-.ingr-picker{background:var(--paper2);border-radius:var(--rs);padding:11px;margin-top:8px;border:1px solid var(--paper3)}
+.star{font-size:18px;cursor:pointer;color:var(--text3);transition:color .12s}
+.star.on{color:var(--gold)}
+
+/* ── Ingredient builder ── */
+.ingr-picker{background:var(--glass3);border-radius:var(--rs);padding:11px;margin-top:8px;border:1px solid var(--border)}
 .ingr-pick-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .ingr-pick-row select{flex:2}.ingr-pick-row input{flex:1}
-.ingr-pick-row span{font-size:12px;color:var(--ink3);flex-shrink:0;font-family:var(--mono)}
+.ingr-pick-row span{font-size:12px;color:var(--text2);flex-shrink:0;font-family:var(--mono)}
 .ingr-added{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.ingr-tag{display:flex;align-items:center;gap:5px;background:var(--plum-bg);color:var(--plum-text);padding:5px 10px 5px 12px;border-radius:99px;font-size:13px}
-.ingr-tag button{background:none;border:none;cursor:pointer;color:var(--plum-text);font-size:14px;line-height:1;padding:0}
-/* Steps builder */
+.ingr-tag{display:flex;align-items:center;gap:5px;background:var(--plum-dim);color:var(--plum);padding:5px 10px 5px 12px;border-radius:99px;font-size:13px;border:1px solid rgba(188,140,255,.2)}
+.ingr-tag button{background:none;border:none;cursor:pointer;color:var(--plum);font-size:14px;line-height:1;padding:0;opacity:.7}
+
+/* ── Steps builder ── */
 .steps-builder{margin-top:8px}
 .step-input-row{display:flex;gap:9px;align-items:flex-start;margin-bottom:9px}
-.step-input-num{width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--paper);font-size:11px;font-weight:600;font-family:var(--mono);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:10px}
+.step-input-num{width:24px;height:24px;border-radius:50%;background:var(--gold-dim);border:1px solid rgba(227,168,74,.3);color:var(--gold);font-size:11px;font-weight:700;font-family:var(--mono);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:10px}
 .step-input-row textarea{flex:1;min-height:58px}
-.step-input-row button{margin-top:9px;padding:6px 8px;background:none;border:1px solid var(--paper3);border-radius:var(--rs);cursor:pointer;color:var(--ink3);font-size:13px}
-.btn-add-step{width:100%;padding:9px;border:1px dashed var(--paper3);border-radius:var(--rs);background:none;color:var(--ink3);font-size:12px;cursor:pointer;margin-top:4px;font-family:var(--mono);letter-spacing:.03em}
-/* Cost summary */
-.cost-summary{display:flex;align-items:center;justify-content:space-between;background:var(--sage-bg);border-radius:var(--rs);padding:11px 15px;margin-top:10px;border:1px solid rgba(74,124,89,.15)}
-.cost-summary .label{font-size:13px;color:var(--sage-text)}
-.cost-summary .val{font-size:19px;font-weight:600;color:var(--sage);letter-spacing:-.02em}
-/* Servings slider */
-.servings-ctrl{display:flex;align-items:center;gap:10px;background:var(--paper2);border-radius:var(--rs);padding:10px 14px;border:1px solid var(--paper3);margin-bottom:12px}
-.servings-ctrl label{margin:0;font-size:12px;color:var(--ink2);flex:1}
-.servings-ctrl .sv-num{font-size:18px;font-weight:600;color:var(--ink);min-width:28px;text-align:center;font-family:var(--mono)}
-.sv-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--paper3);background:var(--paper);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono)}
-/* Income hero */
-.income-hero{background:linear-gradient(135deg,#1a2a5a 0%,#2a3a7a 100%);border-radius:var(--r);padding:18px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:var(--shadow-md)}
-.income-hero::after{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(180,200,240,.2) 0%,transparent 70%)}
-.income-hero-label{font-size:10px;color:rgba(255,255,255,.5);font-family:var(--mono);letter-spacing:.06em;margin-bottom:4px}
-.income-hero-val{font-size:32px;font-weight:600;color:#fff;letter-spacing:-.03em}
-.income-hero-val em{font-size:15px;color:rgba(255,255,255,.5);font-style:normal;font-weight:400}
+.step-input-row button{margin-top:9px;padding:6px 8px;background:none;border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;color:var(--text2);font-size:13px}
+.btn-add-step{width:100%;padding:9px;border:1px dashed var(--border);border-radius:var(--rs);background:none;color:var(--text2);font-size:12px;cursor:pointer;margin-top:4px;font-family:var(--mono)}
+
+/* ── Cost summary ── */
+.cost-summary{display:flex;align-items:center;justify-content:space-between;background:var(--sage-dim);border-radius:var(--rs);padding:11px 15px;margin-top:10px;border:1px solid rgba(63,185,80,.2)}
+.cost-summary .label{font-size:13px;color:var(--sage)}
+.cost-summary .val{font-size:19px;font-weight:700;color:var(--sage)}
+
+/* ── Servings ctrl ── */
+.servings-ctrl{display:flex;align-items:center;gap:10px;background:var(--glass3);border-radius:var(--rs);padding:10px 14px;border:1px solid var(--border);margin-bottom:12px}
+.sv-num{font-size:18px;font-weight:700;color:var(--text);min-width:28px;text-align:center;font-family:var(--mono)}
+.sv-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--glass);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text)}
+
+/* ── Income hero ── */
+.income-hero{background:linear-gradient(135deg,rgba(88,166,255,.15) 0%,rgba(88,166,255,.06) 100%);border:1px solid rgba(88,166,255,.25);border-radius:var(--r);padding:20px;margin-bottom:12px;position:relative;overflow:hidden}
+.income-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(88,166,255,.12) 0%,transparent 60%)}
+.income-hero-label{font-size:10px;color:rgba(88,166,255,.6);font-family:var(--mono);letter-spacing:.06em;margin-bottom:4px}
+.income-hero-val{font-size:32px;font-weight:700;color:#fff;letter-spacing:-.03em}
+.income-hero-val em{font-size:15px;color:rgba(88,166,255,.6);font-style:normal;font-weight:400}
 .income-hero-row{display:flex;gap:14px;margin-top:13px}
 .income-mini{flex:1}
-.income-mini-label{font-size:10px;color:rgba(255,255,255,.4);font-family:var(--mono);margin-bottom:1px}
-.income-mini-val{font-size:13px;font-weight:500;color:rgba(255,255,255,.9)}
-/* Income cats */
+.income-mini-label{font-size:10px;color:rgba(255,255,255,.35);font-family:var(--mono);margin-bottom:1px}
+.income-mini-val{font-size:13px;font-weight:600;color:rgba(255,255,255,.85)}
+
+/* ── Cat tags ── */
 .cat-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.cat-tag{display:flex;align-items:center;gap:4px;padding:6px 11px;border-radius:99px;font-size:13px;border:1px solid var(--paper3);background:var(--paper2);color:var(--ink2);cursor:pointer;transition:all .15s}
-.cat-tag.selected{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.cat-tag{display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:99px;font-size:13px;border:1px solid var(--border);background:var(--glass3);color:var(--text2);cursor:pointer;transition:all .15s}
+.cat-tag.selected{background:var(--gold-dim);color:var(--gold);border-color:rgba(227,168,74,.3)}
 .cat-tag button{background:none;border:none;cursor:pointer;font-size:13px;padding:0;margin-left:2px;color:inherit;opacity:.5}
 .add-cat-row{display:flex;gap:8px}.add-cat-row input{flex:1}
-/* Income bars */
+
+/* ── Income bars ── */
 .income-bar-row{display:flex;align-items:center;gap:9px;margin-bottom:8px}
-.income-bar-label{font-size:11px;width:68px;flex-shrink:0;color:var(--ink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono)}
-.income-bar{height:20px;border-radius:4px;background:var(--slate-bg);min-width:4px}
-.income-bar-val{font-size:12px;color:var(--slate-text);white-space:nowrap;font-family:var(--mono);font-weight:500}
-/* Compare */
+.income-bar-label{font-size:11px;width:68px;flex-shrink:0;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono)}
+.income-bar{height:20px;border-radius:4px;background:var(--slate-dim);min-width:4px}
+.income-bar-val{font-size:12px;color:var(--slate);white-space:nowrap;font-family:var(--mono);font-weight:600}
+
+/* ── Compare ── */
 .cg{margin-bottom:20px}
-.cg-title{font-size:14px;font-weight:500;margin-bottom:9px;letter-spacing:-.01em}
+.cg-title{font-size:14px;font-weight:600;margin-bottom:9px;color:var(--text)}
 .cg-row{display:flex;align-items:center;gap:9px;margin-bottom:7px}
-.cg-store{font-size:11px;width:64px;flex-shrink:0;color:var(--ink3);font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cg-store{font-size:11px;width:64px;flex-shrink:0;color:var(--text2);font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cg-bar{height:20px;border-radius:4px;min-width:4px}
-.cg-val{font-size:12px;color:var(--ink);white-space:nowrap;font-family:var(--mono)}
-.tag-cheap{background:var(--sage-bg);color:var(--sage-text);padding:1px 6px;border-radius:4px;font-size:10px;margin-left:5px;font-weight:500}
-/* Shopping list */
-.shop-item{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:11px;box-shadow:var(--shadow);transition:opacity .2s}
-.shop-item.done{opacity:.45}
-.shop-check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--paper3);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;background:var(--paper)}
-.shop-check.checked{background:var(--sage);border-color:var(--sage)}
-.shop-item-name{flex:1;font-size:15px;font-weight:500}
-.shop-item-name.done{text-decoration:line-through;color:var(--ink3)}
-.shop-item-note{font-size:12px;color:var(--ink3);font-family:var(--mono)}
+.cg-val{font-size:12px;color:var(--text);white-space:nowrap;font-family:var(--mono)}
+.tag-cheap{background:var(--sage-dim);color:var(--sage);padding:1px 6px;border-radius:4px;font-size:10px;margin-left:5px;font-weight:600}
+
+/* ── Shopping list ── */
+.shop-item{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:11px;transition:opacity .2s}
+.shop-item.done{opacity:.35}
+.shop-check{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;background:transparent}
+.shop-check.checked{background:var(--sage);border-color:var(--sage);box-shadow:0 0 10px var(--sage-dim)}
+.shop-item-name{flex:1;font-size:15px;font-weight:500;color:var(--text)}
+.shop-item-name.done{text-decoration:line-through;color:var(--text2)}
+.shop-item-note{font-size:12px;color:var(--text2);font-family:var(--mono)}
 .quick-add-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
-.qa-btn{padding:8px 6px;border:1px solid var(--paper3);border-radius:var(--rs);background:var(--paper);font-size:13px;cursor:pointer;text-align:center;font-family:var(--serif);transition:all .15s;line-height:1.3}
-.qa-btn:active{background:var(--paper2);transform:scale(.96)}
-/* Insights */
-.chart-wrap{position:relative;height:140px;margin-bottom:6px}
-.chart-bars{display:flex;align-items:flex-end;gap:6px;height:120px;padding:0 2px}
-.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
-.chart-bar{width:100%;border-radius:4px 4px 0 0;background:var(--sage-bg);min-height:3px;transition:height .4s cubic-bezier(.34,1.56,.64,1);position:relative;cursor:pointer}
-.chart-bar.highlight{background:var(--sage)}
-.chart-bar-tip{position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);font-size:10px;padding:2px 6px;border-radius:4px;white-space:nowrap;font-family:var(--mono);display:none}
-.chart-bar:hover .chart-bar-tip{display:block}
-.chart-label{font-size:10px;color:var(--ink3);font-family:var(--mono);margin-top:4px}
-.donut-wrap{display:flex;align-items:center;gap:16px}
-.donut-legend{flex:1}
-.donut-legend-row{display:flex;align-items:center;gap:7px;margin-bottom:7px;font-size:13px}
-.donut-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.qa-btn{padding:8px 6px;border:1px solid var(--border);border-radius:var(--rs);background:var(--glass3);font-size:13px;cursor:pointer;text-align:center;color:var(--text);transition:all .15s;line-height:1.3}
+.qa-btn:active{background:var(--glass2);transform:scale(.96)}
+
+/* ── Ranking ── */
 .ranking-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
-.ranking-num{width:20px;height:20px;border-radius:50%;background:var(--paper2);font-size:11px;font-weight:600;font-family:var(--mono);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--ink3)}
-.ranking-num.top{background:var(--gold-bg);color:var(--gold-text)}
-.ranking-name{flex:1;font-size:14px;font-weight:500}
-.ranking-val{font-size:13px;font-family:var(--mono);color:var(--ink3);text-align:right}
-.ranking-bar-bg{height:4px;background:var(--paper3);border-radius:2px;margin-top:3px}
-.ranking-bar-fill{height:4px;background:var(--gold);border-radius:2px}
-/* Recommend */
-.rec-recipe{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--r);padding:13px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
+.ranking-num{width:20px;height:20px;border-radius:50%;background:var(--glass3);font-size:11px;font-weight:700;font-family:var(--mono);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text2)}
+.ranking-num.top{background:var(--gold-dim);color:var(--gold)}
+.ranking-name{flex:1;font-size:14px;font-weight:500;color:var(--text)}
+.ranking-val{font-size:13px;font-family:var(--mono);color:var(--text2);text-align:right}
+.ranking-bar-bg{height:3px;background:var(--glass3);border-radius:2px;margin-top:4px}
+.ranking-bar-fill{height:3px;background:var(--gold);border-radius:2px;box-shadow:0 0 6px var(--gold-glow)}
+
+/* ── Recommend ── */
+.rec-recipe{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:13px 14px;margin-bottom:8px}
 .rec-match{font-size:11px;color:var(--sage);font-family:var(--mono);margin-top:4px}
-.tag-chip{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;background:var(--sage-bg);color:var(--sage-text);margin:2px 3px 2px 0;font-family:var(--mono)}
-/* Backup */
-.backup-info{font-size:13px;color:var(--ink2);line-height:1.8;padding:8px 0}
-.backup-info b{color:var(--ink);font-weight:500}
-.danger-zone{margin-top:8px;padding-top:12px;border-top:1px solid var(--paper3)}
-/* Modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(15,14,12,.6);z-index:200;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
-.modal{background:var(--paper);border-radius:var(--r) var(--r) 0 0;padding:20px 20px 32px;width:100%;max-width:480px;box-shadow:0 -8px 40px rgba(15,14,12,.2)}
-.modal h3{font-size:17px;font-weight:600;margin-bottom:8px;letter-spacing:-.01em}
-.modal p{font-size:14px;color:var(--ink2);line-height:1.7;margin-bottom:16px}
+.tag-chip{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;background:var(--sage-dim);color:var(--sage);margin:2px 3px 2px 0;font-family:var(--mono)}
+
+/* ── Inventory ── */
+.inv-item{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:border-color .15s}
+.inv-low{border-color:rgba(248,81,73,.3);background:rgba(248,81,73,.04)}
+.inv-ok{border-color:rgba(63,185,80,.2)}
+.inv-bar-wrap{width:60px;height:6px;background:var(--glass3);border-radius:3px;margin-top:4px;flex-shrink:0}
+.inv-bar{height:6px;border-radius:3px;transition:width .3s}
+
+/* ── Dashboard ── */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.dash-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:14px;position:relative;overflow:hidden}
+.dash-card::after{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:.12}
+.dash-card.gold::after{background:var(--gold)}
+.dash-card.sage::after{background:var(--sage)}
+.dash-card.slate::after{background:var(--slate)}
+.dash-card.rust::after{background:var(--rust)}
+.dash-label{font-size:10px;color:var(--text2);font-family:var(--mono);letter-spacing:.04em;margin-bottom:6px}
+.dash-val{font-size:22px;font-weight:700;letter-spacing:-.03em}
+.dash-sub{font-size:11px;color:var(--text2);margin-top:3px;font-family:var(--mono)}
+.dash-icon{font-size:24px;position:absolute;top:14px;right:14px;opacity:.5}
+.week-row{display:flex;gap:6px;margin-top:10px}
+.week-day{flex:1;text-align:center}
+.week-day-label{font-size:9px;color:var(--text2);font-family:var(--mono);margin-bottom:4px}
+.week-day-bar{height:40px;display:flex;align-items:flex-end;justify-content:center;margin-bottom:3px}
+.week-bar{width:100%;border-radius:3px 3px 0 0;background:var(--glass3);min-height:2px;transition:height .4s ease}
+.week-bar.today{background:linear-gradient(180deg,var(--gold),rgba(227,168,74,.4))}
+.week-day-val{font-size:9px;color:var(--text2);font-family:var(--mono)}
+.section-label{font-size:10px;font-weight:600;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;margin:4px 0 10px;font-family:var(--mono)}
+
+/* ── Backup ── */
+.backup-info{font-size:13px;color:var(--text2);line-height:1.8;padding:8px 0}
+.backup-info b{color:var(--text);font-weight:500}
+.danger-zone{margin-top:8px;padding-top:12px;border-top:1px solid var(--border)}
+
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;padding:20px 20px 32px;width:100%;max-width:480px;box-shadow:var(--shadow-lg);max-height:92vh;overflow-y:auto}
+.modal h3{font-size:17px;font-weight:700;margin-bottom:10px;color:var(--text)}
+.modal p{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:16px}
 .modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.divider{height:1px;background:var(--paper3);margin:12px 0}
-.empty{text-align:center;padding:40px 16px;color:var(--ink3)}
-.empty-icon{font-size:38px;margin-bottom:10px;display:block;opacity:.6}
-.empty-text{font-size:13px;font-family:var(--mono)}
-.toast{position:fixed;bottom:94px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 20px;border-radius:99px;font-size:12px;font-weight:500;font-family:var(--mono);z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;max-width:92vw;text-align:center;box-shadow:0 4px 20px rgba(15,14,12,.3);letter-spacing:.03em}
+.divider{height:1px;background:var(--border);margin:12px 0}
+
+/* ── Empty state ── */
+.empty{text-align:center;padding:48px 16px;color:var(--text2)}
+.empty-icon{font-size:44px;margin-bottom:12px;display:block;opacity:.5}
+.empty-text{font-size:14px;font-family:var(--mono);margin-bottom:8px}
+.empty-hint{font-size:12px;color:var(--text3);line-height:1.6}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:rgba(30,35,42,.95);border:1px solid var(--border);color:var(--text);padding:10px 22px;border-radius:99px;font-size:12px;font-weight:500;font-family:var(--mono);z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;max-width:92vw;text-align:center;box-shadow:var(--shadow);letter-spacing:.03em}
+
+/* ── Store tag colors ── */
+.store-市場{background:rgba(63,185,80,.15);color:#3fb950}
+.store-家樂福{background:rgba(88,166,255,.15);color:#58a6ff}
+.store-全聯{background:rgba(248,81,73,.15);color:#f85149}
+.store-大潤發{background:rgba(227,168,74,.15);color:#e3a84a}
+.store-好市多{background:rgba(188,140,255,.15);color:#bc8cff}
+.store-default{background:rgba(255,255,255,.08);color:#8b949e}
+
 ::-webkit-scrollbar{width:0;height:0}
 </style>
 </head>
@@ -221,18 +283,23 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <div class="topbar">
   <div>
     <h1>廚房<em>記帳</em></h1>
-    <div class="topbar-sub" id="top-sub">載入中…</div>
+    <div class="topbar-sub" id="top-sub">同步中…</div>
   </div>
 </div>
 
+<!-- ===== 儀表板 ===== -->
+<div id="tab-dashboard" class="section active">
+  <div id="dash-content" style="margin-top:2px"></div>
+</div>
+
 <!-- ===== 新增買菜 ===== -->
-<div id="tab-grocery-add" class="section active">
+<div id="tab-grocery-add" class="section">
   <div class="card" style="margin-top:2px">
     <div class="card-title">新增買菜</div>
     <div class="fg"><label>品項名稱</label><input type="text" id="g-name" placeholder="例：高麗菜、雞蛋、豬五花"></div>
     <div class="row2">
       <div class="fg"><label>分類</label><select id="g-cat"><option value="🥬">🥬 蔬菜</option><option value="🍖">🍖 肉類</option><option value="🐟">🐟 海鮮</option><option value="🥚">🥚 蛋豆奶</option><option value="🍎">🍎 水果</option><option value="🧴">🧴 日用品</option><option value="🛒">🛒 其他</option></select></div>
-      <div class="fg"><label>購買地點</label><select id="g-store"><option>菜市場</option><option>家樂福</option><option>全聯</option><option>大潤發</option><option>好市多</option><option>傳統市場</option><option>超商</option><option>網購</option><option>其他</option></select></div>
+      <div class="fg"><label>購買地點</label><select id="g-store"></select></div>
     </div>
     <div class="row3">
       <div class="fg"><label>價格（元）</label><input type="number" id="g-price" placeholder="30" min="0" inputmode="decimal"></div>
@@ -244,6 +311,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="fg"><label>備註</label><input type="text" id="g-note" placeholder="特價、產地、品牌"></div>
     </div>
     <button class="btn-primary" onclick="addGrocery()">新增買菜紀錄</button>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+      <div class="fg"><label>自訂購買地點</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="new-store-name" placeholder="新增地點，例：頂好、棉花田" style="flex:1">
+          <button class="btn btn-sm btn-gold" onclick="addCustomStore()">新增</button>
+        </div>
+      </div>
+      <div id="custom-store-tags" class="cat-tags"></div>
+    </div>
   </div>
 </div>
 
@@ -264,9 +340,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <!-- ===== 購物清單 ===== -->
 <div id="tab-shoplist" class="section">
   <div class="card" style="margin-top:2px">
-    <div class="card-title">快速新增（常買品項）</div>
+    <div class="card-title">常買品項</div>
     <div class="quick-add-grid" id="quick-add-grid"></div>
-    <div style="font-size:10px;color:var(--ink3);font-family:var(--mono);letter-spacing:.04em;margin-bottom:8px;text-transform:uppercase">自訂新增</div>
     <div class="row2" style="margin-bottom:8px">
       <input type="text" id="sl-name" placeholder="品項名稱">
       <input type="text" id="sl-note" placeholder="備註（選填）">
@@ -275,14 +350,35 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
   <div class="card">
     <div class="card-title" style="margin-bottom:10px">
-      購物清單
-      <span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink3)" id="sl-progress"></span>
+      待購清單
+      <span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--text2)" id="sl-progress"></span>
     </div>
     <div class="list" id="shop-list"></div>
     <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn btn-sm" style="flex:1" onclick="clearDoneItems()">清除已勾選</button>
+      <button class="btn btn-sm btn-sage" style="flex:1" onclick="clearDoneItems()">清除已勾選</button>
       <button class="btn btn-sm btn-danger" onclick="clearAllItems()">清空</button>
     </div>
+  </div>
+</div>
+
+<!-- ===== 庫存 ===== -->
+<div id="tab-inventory" class="section">
+  <div class="card" style="margin-top:2px">
+    <div class="card-title">新增庫存</div>
+    <div class="row2">
+      <div class="fg"><label>食材名稱</label><input type="text" id="inv-name" placeholder="例：高麗菜"></div>
+      <div class="fg"><label>目前數量</label><input type="number" id="inv-qty" placeholder="1" min="0" step="0.1" inputmode="decimal"></div>
+    </div>
+    <div class="row3">
+      <div class="fg"><label>單位</label><select id="inv-unit"><option>斤</option><option>公斤</option><option>克</option><option>顆</option><option>包</option><option>盒</option><option>個</option></select></div>
+      <div class="fg"><label>警示低於</label><input type="number" id="inv-low" placeholder="0.5" min="0" step="0.1" inputmode="decimal"></div>
+      <div class="fg"><label>到期日</label><input type="date" id="inv-exp"></div>
+    </div>
+    <button class="btn-primary" onclick="addInventory()">新增庫存</button>
+  </div>
+  <div class="card">
+    <div class="card-title">目前庫存</div>
+    <div class="list" id="inventory-list"></div>
   </div>
 </div>
 
@@ -297,11 +393,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
     <div class="row3">
       <div class="fg"><label>數量</label><input type="number" id="r-servings" placeholder="2" min="0.1" step="0.1" value="2" inputmode="decimal"></div>
-      <div class="fg"><label>單位</label><select id="r-servings-unit"><option value="人份">人份</option><option value="顆">顆</option><option value="條">條</option><option value="份">份</option><option value="盤">盤</option><option value="碗">碗</option><option value="鍋">鍋</option><option value="個">個</option><option value="包">包</option><option value="盒">盒</option></select></div>
+      <div class="fg"><label>單位</label><select id="r-servings-unit"><option>人份</option><option>顆</option><option>條</option><option>份</option><option>盤</option><option>碗</option><option>鍋</option><option>個</option><option>包</option><option>盒</option></select></div>
       <div class="fg"><label>時間（分鐘）</label><input type="number" id="r-time" placeholder="20" min="1" inputmode="numeric"></div>
     </div>
-    <div class="fg">
-      <label>評分</label>
+    <div class="fg"><label>評分</label>
       <div class="stars" id="rate-stars">
         <span class="star" onclick="setRating(1)">★</span><span class="star" onclick="setRating(2)">★</span>
         <span class="star" onclick="setRating(3)">★</span><span class="star" onclick="setRating(4)">★</span>
@@ -313,11 +408,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="card-title">食材與成本</div>
     <div id="ingr-added-list" class="ingr-added"></div>
     <div class="ingr-picker">
-      <div style="font-size:10px;color:var(--ink3);margin-bottom:8px;font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase">從買菜紀錄選取</div>
+      <div style="font-size:10px;color:var(--text2);margin-bottom:8px;font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase">從買菜紀錄選取</div>
       <div class="ingr-pick-row"><select id="ingr-select"><option value="">選擇食材…</option></select><input type="number" id="ingr-qty" placeholder="用量" min="0" step="0.01" inputmode="decimal"><span id="ingr-unit-label">-</span></div>
       <button class="btn btn-sm" onclick="addIngredient()" style="width:100%">加入食材</button>
     </div>
-    <div style="font-size:10px;color:var(--ink3);margin:10px 0 7px;font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase">或手動輸入</div>
+    <div style="font-size:10px;color:var(--text2);margin:10px 0 7px;font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase">或手動輸入</div>
     <div class="row3" style="margin-bottom:4px">
       <div class="fg" style="margin-bottom:0"><input type="text" id="m-ingr-name" placeholder="食材名"></div>
       <div class="fg" style="margin-bottom:0"><input type="number" id="m-ingr-cost" placeholder="成本" inputmode="decimal"></div>
@@ -354,17 +449,13 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <div id="tab-recommend" class="section">
   <div class="card" style="margin-top:2px">
     <div class="card-title">選擇手邊食材</div>
-    <div style="font-size:13px;color:var(--ink3);margin-bottom:10px">勾選你現在有的食材，看看能做什麼料理</div>
     <div id="avail-ingr-tags" class="ingr-added" style="margin-bottom:10px"></div>
     <div style="display:flex;gap:8px">
       <input type="text" id="avail-ingr-input" placeholder="輸入食材名稱" style="flex:1" onkeydown="if(event.key==='Enter')addAvailIngr()">
       <button class="btn btn-sm" onclick="addAvailIngr()">加入</button>
     </div>
   </div>
-  <div class="card">
-    <div class="card-title">可以做的料理</div>
-    <div id="rec-results"></div>
-  </div>
+  <div class="card"><div class="card-title">可以做的料理</div><div id="rec-results"></div></div>
 </div>
 
 <!-- ===== 收入 ===== -->
@@ -381,8 +472,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="card">
     <div class="card-title">新增收入</div>
     <div class="fg"><label>金額（元）</label><input type="number" id="inc-amount" placeholder="例：30000" min="0" inputmode="decimal"></div>
-    <div class="fg">
-      <label>來源分類</label>
+    <div class="fg"><label>來源分類</label>
       <div class="cat-tags" id="inc-cat-tags"></div>
       <div class="add-cat-row"><input type="text" id="inc-new-cat" placeholder="新增分類…"><button class="btn btn-sm" onclick="addIncomeCategory()">新增</button></div>
     </div>
@@ -392,10 +482,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
     <button class="btn-primary" onclick="addIncome()">新增收入紀錄</button>
   </div>
-  <div class="card">
-    <div class="card-title">各分類佔比（本月）</div>
-    <div id="income-breakdown"></div>
-  </div>
+  <div class="card"><div class="card-title">各分類佔比（本月）</div><div id="income-breakdown"></div></div>
   <div class="card">
     <div class="card-title">收入紀錄</div>
     <div class="filter-row" style="margin-bottom:10px">
@@ -410,28 +497,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <div id="tab-insights" class="section">
   <div class="card" style="margin-top:2px">
     <div class="card-title">近6個月買菜花費</div>
-    <div style="position:relative;height:160px;margin-bottom:4px">
-      <canvas id="trend-chart" style="width:100%;height:160px"></canvas>
-    </div>
+    <div style="position:relative;height:160px;margin-bottom:4px"><svg id="trend-chart" width="100%" height="160"></svg></div>
   </div>
-  <div class="card">
-    <div class="card-title">本月收支對比</div>
-    <div id="income-vs-spend"></div>
-  </div>
-  <div class="card">
-    <div class="card-title">花費最多的食材 TOP 5</div>
-    <div id="top-spend"></div>
-  </div>
-  <div class="card">
-    <div class="card-title">購買最頻繁的品項 TOP 5</div>
-    <div id="top-freq"></div>
-  </div>
+  <div class="card"><div class="card-title">本月收支對比</div><div id="income-vs-spend"></div></div>
+  <div class="card"><div class="card-title">花費最多的食材 TOP 5</div><div id="top-spend"></div></div>
+  <div class="card"><div class="card-title">購買最頻繁的品項 TOP 5</div><div id="top-freq"></div></div>
 </div>
 
 <!-- ===== 比價 ===== -->
-<div id="tab-compare" class="section">
-  <div id="compare-content"></div>
-</div>
+<div id="tab-compare" class="section"><div id="compare-content"></div></div>
 
 <!-- ===== 備份 ===== -->
 <div id="tab-backup" class="section">
@@ -439,16 +513,14 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="card-title">匯出備份</div>
     <div class="backup-info">儲存成 .json 檔案，換手機時可匯入還原。</div>
     <div class="backup-btn-row">
-      <button class="btn btn-export" onclick="exportData()">⬇ 備份 (.json)</button>
-      <button class="btn btn-import-csv" onclick="exportCSV()">⬇ 表格 (.csv)</button>
+      <button class="btn btn-sage" onclick="exportData()">⬇ 備份 (.json)</button>
+      <button class="btn btn-slate" onclick="exportCSV()">⬇ 表格 (.csv)</button>
     </div>
-    <div style="font-size:11px;color:var(--ink3);font-family:var(--mono)">CSV 可用 Excel / Numbers 開啟</div>
   </div>
   <div class="card">
     <div class="card-title">匯入備份</div>
-    <div class="backup-info">選擇之前匯出的 .json 備份檔，資料會自動合併。</div>
     <label style="display:block;cursor:pointer">
-      <div class="btn" style="text-align:center;background:var(--gold-bg);color:var(--gold-text);border-color:var(--gold-bg);font-weight:500">⬆ 選擇備份檔匯入</div>
+      <div class="btn btn-gold" style="text-align:center">⬆ 選擇備份檔匯入</div>
       <input type="file" accept=".json" style="display:none" onchange="importData(this)">
     </label>
   </div>
@@ -456,17 +528,19 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="card-title">資料狀態</div>
     <div id="backup-stats" class="backup-info"></div>
     <div class="danger-zone">
-      <div style="font-size:10px;font-weight:500;color:var(--rust);margin-bottom:8px;font-family:var(--mono);letter-spacing:.08em">DANGER ZONE</div>
+      <div style="font-size:10px;font-weight:600;color:var(--rust);margin-bottom:8px;font-family:var(--mono);letter-spacing:.08em">DANGER ZONE</div>
       <button class="btn btn-danger btn-sm" onclick="confirmClear()">清除所有資料</button>
     </div>
   </div>
 </div>
 
-<!-- Bottom nav -->
+<!-- ===== Bottom nav ===== -->
 <nav class="bottom-nav">
-  <button class="nav-item active" onclick="switchTab('grocery-add')" id="nav-grocery-add"><span class="nav-icon">🛒</span><span class="nav-label">買菜</span></button>
+  <button class="nav-item active" onclick="switchTab('dashboard')" id="nav-dashboard"><span class="nav-icon">🏠</span><span class="nav-label">首頁</span></button>
+  <button class="nav-item" onclick="switchTab('grocery-add')" id="nav-grocery-add"><span class="nav-icon">🛒</span><span class="nav-label">買菜</span></button>
   <button class="nav-item" onclick="switchTab('grocery-list')" id="nav-grocery-list"><span class="nav-icon">📋</span><span class="nav-label">紀錄</span></button>
   <button class="nav-item" onclick="switchTab('shoplist')" id="nav-shoplist"><span class="nav-icon">✅</span><span class="nav-label">清單</span></button>
+  <button class="nav-item" onclick="switchTab('inventory')" id="nav-inventory"><span class="nav-icon">📦</span><span class="nav-label">庫存</span></button>
   <button class="nav-item" onclick="switchTab('recipe-add')" id="nav-recipe-add"><span class="nav-icon">🍳</span><span class="nav-label">料理</span></button>
   <button class="nav-item" onclick="switchTab('recipe-list')" id="nav-recipe-list"><span class="nav-icon">📖</span><span class="nav-label">食譜</span></button>
   <button class="nav-item" onclick="switchTab('recommend')" id="nav-recommend"><span class="nav-icon">💡</span><span class="nav-label">推薦</span></button>
@@ -476,17 +550,91 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <button class="nav-item" onclick="switchTab('backup')" id="nav-backup"><span class="nav-icon">☁️</span><span class="nav-label">備份</span></button>
 </nav>
 
+<!-- Confirm modal -->
 <div id="modal-overlay" class="modal-overlay" style="display:none" onclick="closeModal()">
   <div class="modal" onclick="event.stopPropagation()">
     <h3 id="modal-title"></h3><p id="modal-msg"></p>
     <div class="modal-btns"><button class="btn" onclick="closeModal()">取消</button><button class="btn btn-danger" id="modal-confirm-btn">確定</button></div>
   </div>
 </div>
+
+<!-- Edit Grocery Modal -->
+<div id="edit-g-overlay" class="modal-overlay" style="display:none" onclick="closeEditG()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 style="margin-bottom:14px">編輯買菜紀錄</h3>
+    <div class="fg"><label>品項名稱</label><input type="text" id="eg-name"></div>
+    <div class="row2">
+      <div class="fg"><label>分類</label><select id="eg-cat"><option value="🥬">🥬 蔬菜</option><option value="🍖">🍖 肉類</option><option value="🐟">🐟 海鮮</option><option value="🥚">🥚 蛋豆奶</option><option value="🍎">🍎 水果</option><option value="🧴">🧴 日用品</option><option value="🛒">🛒 其他</option></select></div>
+      <div class="fg"><label>購買地點</label><select id="eg-store"></select></div>
+    </div>
+    <div class="row3">
+      <div class="fg"><label>價格（元）</label><input type="number" id="eg-price" min="0" inputmode="decimal"></div>
+      <div class="fg"><label>數量</label><input type="number" id="eg-qty" min="0" step="0.1" inputmode="decimal"></div>
+      <div class="fg"><label>單位</label><select id="eg-unit"><option>斤</option><option>公斤</option><option>克</option><option>顆</option><option>包</option><option>盒</option><option>瓶</option><option>條</option><option>份</option><option>個</option></select></div>
+    </div>
+    <div class="row2">
+      <div class="fg"><label>日期</label><input type="date" id="eg-date"></div>
+      <div class="fg"><label>備註</label><input type="text" id="eg-note"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
+      <button class="btn btn-danger" onclick="deleteEditG()">刪除</button>
+      <button class="btn-primary" style="margin:0" onclick="saveEditG()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Recipe Modal -->
+<div id="edit-r-overlay" class="modal-overlay" style="display:none" onclick="closeEditR()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 style="margin-bottom:14px">編輯料理紀錄</h3>
+    <div class="fg"><label>料理名稱</label><input type="text" id="er-name"></div>
+    <div class="row2">
+      <div class="fg"><label>類型</label><select id="er-type"><option value="🥗">🥗 蔬食</option><option value="🍳">🍳 蛋料理</option><option value="🥩">🥩 肉類</option><option value="🐟">🐟 海鮮</option><option value="🍜">🍜 麵飯</option><option value="🍲">🍲 湯品</option><option value="🥘">🥘 其他</option></select></div>
+      <div class="fg"><label>日期</label><input type="date" id="er-date"></div>
+    </div>
+    <div class="row3">
+      <div class="fg"><label>數量</label><input type="number" id="er-servings" min="0.1" step="0.1" inputmode="decimal"></div>
+      <div class="fg"><label>單位</label><select id="er-servings-unit"><option>人份</option><option>顆</option><option>條</option><option>份</option><option>盤</option><option>碗</option><option>鍋</option><option>個</option></select></div>
+      <div class="fg"><label>時間（分）</label><input type="number" id="er-time" min="1" inputmode="numeric"></div>
+    </div>
+    <div class="fg"><label>評分</label>
+      <div class="stars" id="er-stars">
+        <span class="star" onclick="setEditRating(1)">★</span><span class="star" onclick="setEditRating(2)">★</span>
+        <span class="star" onclick="setEditRating(3)">★</span><span class="star" onclick="setEditRating(4)">★</span>
+        <span class="star" onclick="setEditRating(5)">★</span>
+      </div>
+    </div>
+    <div class="fg"><label>備註</label><textarea id="er-note" rows="2"></textarea></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
+      <button class="btn btn-danger" onclick="deleteEditR()">刪除</button>
+      <button class="btn-primary" style="margin:0" onclick="saveEditR()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Inventory Modal -->
+<div id="edit-inv-overlay" class="modal-overlay" style="display:none" onclick="closeEditInv()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 style="margin-bottom:14px">編輯庫存</h3>
+    <div class="fg"><label>食材名稱</label><input type="text" id="ei-name"></div>
+    <div class="row2">
+      <div class="fg"><label>目前數量</label><input type="number" id="ei-qty" min="0" step="0.1" inputmode="decimal"></div>
+      <div class="fg"><label>單位</label><select id="ei-unit"><option>斤</option><option>公斤</option><option>克</option><option>顆</option><option>包</option><option>盒</option><option>個</option></select></div>
+    </div>
+    <div class="row2">
+      <div class="fg"><label>警示低於</label><input type="number" id="ei-low" min="0" step="0.1" inputmode="decimal"></div>
+      <div class="fg"><label>到期日</label><input type="date" id="ei-exp"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
+      <button class="btn btn-danger" onclick="deleteEditInv()">刪除</button>
+      <button class="btn-primary" style="margin:0" onclick="saveEditInv()">儲存</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
-// ── Data ─────────────────────────────────────────────
-// ── Firebase ─────────────────────────────────────────
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
@@ -502,65 +650,97 @@ const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
 const DATA_DOC = doc(db, 'family', 'shared');
 
-let groceries=[],recipes=[],incomes=[],incomeCategories=["薪資","固定收入","額外收入","租金","投資"],shopList=[];
+// ── Data ─────────────────────────────────────────────
+let groceries=[],recipes=[],incomes=[],incomeCategories=["薪資","固定收入","額外收入","租金","投資"],shopList=[],inventory=[],customStores=[];
 let tmpIngredients=[],tmpSteps=[''],tmpRating=0,selectedIncCat='';
 let availIngredients=[];
-let _saveTimer=null;
-let _syncing=false;
+let _saveTimer=null,_editGId=null,_editRId=null,_editInvId=null,_editRRating=0;
 
 const today=new Date().toISOString().split('T')[0];
-document.getElementById('g-date').value=today;
-document.getElementById('r-date').value=today;
-document.getElementById('inc-date').value=today;
+['g-date','r-date','inc-date','inv-exp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today;});
 
-// 寫入 Firestore (debounce)
+const DEFAULT_STORES=['菜市場','家樂福','全聯','大潤發','好市多','傳統市場','超商','網購','其他'];
+
+function allStores(){return [...DEFAULT_STORES,...customStores];}
+
 function saveAll(){
   clearTimeout(_saveTimer);
   _saveTimer=setTimeout(async()=>{
-    try{
-      await setDoc(DATA_DOC,{groceries,recipes,incomes,incomeCategories,shopList,updatedAt:Date.now()});
-    }catch(e){toast('⚠️ 儲存失敗，請檢查網路');}
+    try{await setDoc(DATA_DOC,{groceries,recipes,incomes,incomeCategories,shopList,inventory,customStores,updatedAt:Date.now()});}
+    catch(e){toast('⚠️ 儲存失敗');}
   },600);
 }
-function saveG(){saveAll();}
-function saveR(){saveAll();}
-function saveI(){saveAll();}
-function saveIC(){saveAll();}
-function saveSL(){saveAll();}
+const saveG=saveAll,saveR=saveAll,saveI=saveAll,saveIC=saveAll,saveSL=saveAll,saveInv=saveAll;
 
-// 即時同步
 function startSync(){
-  document.getElementById('top-sub').textContent='資料同步中…';
+  document.getElementById('top-sub').textContent='同步中…';
   onSnapshot(DATA_DOC,(snap)=>{
     if(snap.exists()){
       const d=snap.data();
-      groceries=d.groceries||[];
-      recipes=d.recipes||[];
-      incomes=d.incomes||[];
+      groceries=d.groceries||[];recipes=d.recipes||[];incomes=d.incomes||[];
       incomeCategories=d.incomeCategories||["薪資","固定收入","額外收入","租金","投資"];
-      shopList=d.shopList||[];
+      shopList=d.shopList||[];inventory=d.inventory||[];customStores=d.customStores||[];
     }
+    populateStoreSelects();
     updateTopSub();
-    const active=ALL_TABS.find(id=>document.getElementById('tab-'+id).classList.contains('active'));
+    const active=ALL_TABS.find(id=>document.getElementById('tab-'+id)?.classList.contains('active'));
     if(active)switchTab(active);
-  },(err)=>{
-    document.getElementById('top-sub').textContent='⚠️ 連線失敗';
-  });
+  },(err)=>{document.getElementById('top-sub').textContent='⚠️ 連線失敗';});
 }
 
 // ── Toast ─────────────────────────────────────────────
 let _tt;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.opacity='1';clearTimeout(_tt);_tt=setTimeout(()=>t.style.opacity='0',2400);}
 
+// ── Store colors ──────────────────────────────────────
+function storeClass(s){
+  if(s.includes('市場'))return'store-市場';
+  if(s==='家樂福')return'store-家樂福';
+  if(s==='全聯')return'store-全聯';
+  if(s==='大潤發')return'store-大潤發';
+  if(s==='好市多')return'store-好市多';
+  return'store-default';
+}
+
+function populateStoreSelects(){
+  const stores=allStores();
+  const opts=stores.map(s=>`<option>${s}</option>`).join('');
+  ['g-store','eg-store'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){const cur=el.value;el.innerHTML=opts;if(cur)el.value=cur;}
+  });
+  renderCustomStoreTags();
+}
+
+function renderCustomStoreTags(){
+  const el=document.getElementById('custom-store-tags');
+  if(!el)return;
+  el.innerHTML=customStores.map(s=>`<span class="cat-tag">${s}<button onclick="removeCustomStore('${s}')">×</button></span>`).join('');
+}
+
+function addCustomStore(){
+  const name=document.getElementById('new-store-name').value.trim();
+  if(!name){toast('請輸入地點名稱');return;}
+  if(allStores().includes(name)){toast('地點已存在');return;}
+  customStores.push(name);saveAll();populateStoreSelects();
+  document.getElementById('new-store-name').value='';toast('已新增：'+name);
+}
+function removeCustomStore(name){
+  customStores=customStores.filter(s=>s!==name);saveAll();populateStoreSelects();
+}
+
 // ── Tab switch ────────────────────────────────────────
-const ALL_TABS=['grocery-add','grocery-list','shoplist','recipe-add','recipe-list','recommend','income','insights','compare','backup'];
+const ALL_TABS=['dashboard','grocery-add','grocery-list','shoplist','inventory','recipe-add','recipe-list','recommend','income','insights','compare','backup'];
+
 function switchTab(t){
   ALL_TABS.forEach(id=>{
-    document.getElementById('tab-'+id).classList.toggle('active',id===t);
-    document.getElementById('nav-'+id).classList.toggle('active',id===t);
+    document.getElementById('tab-'+id)?.classList.toggle('active',id===t);
+    document.getElementById('nav-'+id)?.classList.toggle('active',id===t);
   });
+  if(t==='dashboard')renderDashboard();
   if(t==='grocery-list'){renderGroceries();updateGroceryStats();}
   if(t==='shoplist'){renderShopList();renderQuickAdd();}
+  if(t==='inventory')renderInventory();
   if(t==='recipe-add')refreshIngrSelect();
   if(t==='recipe-list'){renderRecipes();updateRecipeStats();}
   if(t==='recommend')renderRecommend();
@@ -575,12 +755,98 @@ function updateTopSub(){
   const now=new Date();
   const m=incomes.filter(r=>{const d=new Date(r.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
   const total=m.reduce((a,r)=>a+r.amount,0);
-  document.getElementById('top-sub').textContent=groceries.length+'筆買菜 · '+recipes.length+'道料理'+(total?' · 入$'+total.toLocaleString():'');
+  const lowInv=inventory.filter(i=>i.lowThreshold&&i.qty<=i.lowThreshold).length;
+  document.getElementById('top-sub').textContent=groceries.length+'筆買菜 · '+recipes.length+'道料理'+(total?' · 入$'+total.toLocaleString():'')+(lowInv?` · ⚠️${lowInv}項庫存不足`:'');
 }
 
-// Store colors
-const SC={'菜市場':['var(--sage-bg)','var(--sage-text)'],'家樂福':['var(--slate-bg)','var(--slate-text)'],'全聯':['var(--rust-bg)','var(--rust-text)'],'大潤發':['var(--gold-bg)','var(--gold-text)'],'好市多':['var(--plum-bg)','var(--plum-text)']};
-function sc(s){return SC[s]||['var(--paper2)','var(--ink2)'];}
+// ── Dashboard ─────────────────────────────────────────
+function renderDashboard(){
+  const now=new Date();
+  const mG=groceries.filter(r=>{const d=new Date(r.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+  const mR=recipes.filter(r=>{const d=new Date(r.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+  const mI=incomes.filter(r=>{const d=new Date(r.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+  const mSpend=mG.reduce((a,r)=>a+r.price,0);
+  const mIncome=mI.reduce((a,r)=>a+r.amount,0);
+  const pct=mIncome?Math.round(mSpend/mIncome*100):0;
+  const lowInv=inventory.filter(i=>i.lowThreshold&&i.qty<=i.lowThreshold);
+  const expSoon=inventory.filter(i=>{if(!i.expiry)return false;const diff=(new Date(i.expiry)-now)/(1000*60*60*24);return diff>=0&&diff<=3;});
+
+  // Week data
+  const weekDays=['日','一','二','三','四','五','六'];
+  const weekData=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(now);d.setDate(now.getDate()-i);
+    const key=d.toISOString().split('T')[0];
+    const total=groceries.filter(g=>g.date===key).reduce((a,g)=>a+g.price,0);
+    weekData.push({label:weekDays[d.getDay()],total,isToday:i===0,date:key});
+  }
+  const maxWeek=Math.max(...weekData.map(d=>d.total),1);
+  const weekTotal=weekData.reduce((a,d)=>a+d.total,0);
+
+  // First time empty state
+  if(!groceries.length&&!recipes.length&&!incomes.length){
+    document.getElementById('dash-content').innerHTML=`
+      <div style="text-align:center;padding:40px 20px">
+        <div style="font-size:60px;margin-bottom:16px">🍳</div>
+        <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px">歡迎使用廚房記帳本</div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:28px">記錄你的買菜花費、料理成本<br>讓家庭飲食開支一目瞭然</div>
+        <div style="display:grid;gap:10px;max-width:280px;margin:0 auto">
+          <button class="btn-primary" onclick="switchTab('grocery-add')" style="margin:0">🛒 開始記錄買菜</button>
+          <button class="btn" onclick="switchTab('recipe-add')">🍳 記錄一道料理</button>
+          <button class="btn" onclick="switchTab('income')">💰 記錄收入</button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('dash-content').innerHTML=`
+    <div class="dash-grid">
+      <div class="dash-card gold">
+        <div class="dash-icon">🛒</div>
+        <div class="dash-label">本月買菜</div>
+        <div class="dash-val" style="color:var(--gold)">$${mSpend.toLocaleString()}</div>
+        <div class="dash-sub">${mG.length} 筆紀錄</div>
+      </div>
+      <div class="dash-card sage">
+        <div class="dash-icon">🍳</div>
+        <div class="dash-label">本月料理</div>
+        <div class="dash-val" style="color:var(--sage)">${mR.length} 道</div>
+        <div class="dash-sub">成本 $${mR.reduce((a,r)=>a+r.totalCost,0).toLocaleString()}</div>
+      </div>
+      <div class="dash-card slate">
+        <div class="dash-icon">💰</div>
+        <div class="dash-label">本月收入</div>
+        <div class="dash-val" style="color:var(--slate)">$${mIncome.toLocaleString()}</div>
+        <div class="dash-sub">買菜佔 ${pct}%</div>
+      </div>
+      <div class="dash-card rust">
+        <div class="dash-icon">📦</div>
+        <div class="dash-label">庫存警示</div>
+        <div class="dash-val" style="color:${lowInv.length?'var(--rust)':'var(--sage)'}">${lowInv.length} 項</div>
+        <div class="dash-sub">${expSoon.length?`${expSoon.length}項即將到期`:'庫存正常'}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">本週買菜花費</div>
+      <div class="week-row">
+        ${weekData.map(d=>`<div class="week-day">
+          <div class="week-day-label">${d.label}</div>
+          <div class="week-day-bar"><div class="week-bar${d.isToday?' today':''}" style="height:${Math.round(d.total/maxWeek*36)+2}px"></div></div>
+          <div class="week-day-val">${d.total?'$'+d.total:'—'}</div>
+        </div>`).join('')}
+      </div>
+      <div style="text-align:right;font-size:12px;color:var(--text2);font-family:var(--mono);margin-top:8px">本週合計 <span style="color:var(--gold);font-weight:700">$${weekTotal.toLocaleString()}</span></div>
+    </div>
+    ${lowInv.length?`<div class="card"><div class="card-title">⚠️ 庫存不足</div>${lowInv.map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:14px;color:var(--text)">${i.name}</span><span style="font-size:13px;color:var(--rust);font-family:var(--mono)">剩 ${i.qty}${i.unit}</span></div>`).join('')}</div>`:''}
+    ${expSoon.length?`<div class="card"><div class="card-title">⏰ 即將到期（3天內）</div>${expSoon.map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:14px;color:var(--text)">${i.name}</span><span style="font-size:13px;color:var(--amber);font-family:var(--mono)">${i.expiry}</span></div>`).join('')}</div>`:''}
+    <div class="card">
+      <div class="card-title">最近買菜</div>
+      ${groceries.slice(0,3).map(r=>{
+        const cls=storeClass(r.store);
+        return`<div class="ri" onclick="switchTab('grocery-list')" style="cursor:pointer;margin-bottom:8px"><div class="ri-icon" style="background:var(--glass3)">${r.cat}</div><div class="ri-main"><div class="ri-name">${r.name}</div><div class="ri-meta">${r.date} · ${r.store}</div></div><div class="ri-price">$${r.price}</div></div>`;
+      }).join('')||'<div style="color:var(--text2);font-size:13px;font-family:var(--mono)">尚無紀錄</div>'}
+    </div>`;
+}
 
 // ── Grocery ───────────────────────────────────────────
 function addGrocery(){
@@ -594,7 +860,6 @@ function addGrocery(){
   document.getElementById('g-name').value='';document.getElementById('g-price').value='';document.getElementById('g-qty').value='1';document.getElementById('g-note').value='';
   updateTopSub();toast('已新增：'+name);
 }
-
 function updateGroceryStats(){
   const now=new Date();const m=groceries.filter(r=>{const d=new Date(r.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
   document.getElementById('gs-monthly').textContent='$'+m.reduce((a,r)=>a+r.price,0).toLocaleString();
@@ -603,7 +868,6 @@ function updateGroceryStats(){
   const top=Object.entries(s).sort((a,b)=>b[1]-a[1])[0];
   document.getElementById('gs-store').textContent=top?top[0]:'-';
 }
-
 function renderGroceries(){
   const storeF=document.getElementById('gfl-store').value,catF=document.getElementById('gfl-cat').value;
   const stores=[...new Set(groceries.map(r=>r.store))];
@@ -611,54 +875,76 @@ function renderGroceries(){
   sel.innerHTML='<option value="">所有地點</option>'+stores.map(s=>`<option value="${s}"${s===cur?' selected':''}>${s}</option>`).join('');
   const filtered=groceries.filter(r=>(!storeF||r.store===storeF)&&(!catF||r.cat===catF));
   const el=document.getElementById('grocery-list');
-  if(!filtered.length){el.innerHTML='<div class="empty"><span class="empty-icon">🛒</span><span class="empty-text">尚無紀錄</span></div>';return;}
+  if(!filtered.length){el.innerHTML=`<div class="empty"><span class="empty-icon">🛒</span><span class="empty-text">尚無買菜紀錄</span><span class="empty-hint">點下方「買菜」頁籤<br>開始記錄第一筆</span></div>`;return;}
   el.innerHTML=filtered.map(r=>{
-    const [bg,col]=sc(r.store);const up=r.qty?(r.price/r.qty).toFixed(1):'-';
-    return `<div class="ri"><div class="ri-icon" style="background:${bg};color:${col}">${r.cat}</div><div class="ri-main"><div class="ri-name">${r.name}${r.note?` <span style="font-weight:400;color:var(--ink3);font-size:12px">(${r.note})</span>`:''}</div><div class="ri-meta">${r.date} · ${r.qty}${r.unit}</div><span class="ri-badge" style="background:${bg};color:${col}">${r.store}</span></div><div class="ri-right"><div class="ri-price">$${r.price}</div><div class="ri-unit">$${up}/${r.unit}</div></div><button class="btn-del" onclick="event.stopPropagation();delGrocery(${r.id})">×</button></div>`;
+    const cls=storeClass(r.store);const up=r.qty?(r.price/r.qty).toFixed(1):'-';
+    return `<div class="ri" onclick="openEditG(${r.id})" style="cursor:pointer"><div class="ri-icon" style="background:var(--glass3)">${r.cat}</div><div class="ri-main"><div class="ri-name">${r.name}${r.note?` <span style="font-weight:400;color:var(--text2);font-size:12px">(${r.note})</span>`:''}</div><div class="ri-meta">${r.date} · ${r.qty}${r.unit}</div><span class="ri-badge ${cls}">${r.store}</span></div><div class="ri-right"><div class="ri-price">$${r.price}</div><div class="ri-unit">$${up}/${r.unit}</div></div><span style="color:var(--text3);font-size:14px;padding-left:4px">›</span></div>`;
   }).join('');
 }
-function delGrocery(id){if(!confirm('確定刪除？'))return;groceries=groceries.filter(r=>r.id!==id);saveG();renderGroceries();updateGroceryStats();updateTopSub();}
+
+// ── Edit Grocery ──────────────────────────────────────
+function openEditG(id){
+  const r=groceries.find(x=>x.id===id);if(!r)return;
+  _editGId=id;
+  document.getElementById('eg-name').value=r.name;
+  document.getElementById('eg-cat').value=r.cat;
+  document.getElementById('eg-store').value=r.store;
+  document.getElementById('eg-price').value=r.price;
+  document.getElementById('eg-qty').value=r.qty;
+  document.getElementById('eg-unit').value=r.unit;
+  document.getElementById('eg-date').value=r.date;
+  document.getElementById('eg-note').value=r.note||'';
+  document.getElementById('edit-g-overlay').style.display='flex';
+}
+function closeEditG(){document.getElementById('edit-g-overlay').style.display='none';_editGId=null;}
+function saveEditG(){
+  if(!_editGId)return;
+  const idx=groceries.findIndex(x=>x.id===_editGId);if(idx===-1)return;
+  const name=document.getElementById('eg-name').value.trim();
+  const price=parseFloat(document.getElementById('eg-price').value);
+  const qty=parseFloat(document.getElementById('eg-qty').value)||1;
+  if(!name||isNaN(price)||price<0){toast('請填入正確資料');return;}
+  groceries[idx]={...groceries[idx],name,cat:document.getElementById('eg-cat').value,store:document.getElementById('eg-store').value,price,qty,unit:document.getElementById('eg-unit').value,date:document.getElementById('eg-date').value,note:document.getElementById('eg-note').value.trim()};
+  saveG();closeEditG();renderGroceries();updateGroceryStats();updateTopSub();toast('已更新：'+name);
+}
+function deleteEditG(){
+  if(!_editGId)return;if(!confirm('確定刪除？'))return;
+  groceries=groceries.filter(x=>x.id!==_editGId);saveG();closeEditG();renderGroceries();updateGroceryStats();updateTopSub();toast('已刪除');
+}
 
 // ── Shopping List ────────────────────────────────────
 function getTopItems(){
   const freq={};groceries.forEach(g=>{freq[g.name]=(freq[g.name]||0)+1;});
   return Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,9).map(([name])=>name);
 }
-
 function renderQuickAdd(){
   const tops=getTopItems();
   const el=document.getElementById('quick-add-grid');
-  if(!tops.length){el.innerHTML='<div style="color:var(--ink3);font-size:12px;font-family:var(--mono);grid-column:1/-1">新增買菜紀錄後，常買品項會自動出現在這裡</div>';return;}
+  if(!tops.length){el.innerHTML='<div style="color:var(--text2);font-size:12px;font-family:var(--mono);grid-column:1/-1">新增買菜紀錄後，常買品項會出現在這裡</div>';return;}
   el.innerHTML=tops.map(name=>`<button class="qa-btn" onclick="quickAddToList('${name}')">${name}</button>`).join('');
 }
-
-function quickAddToList(name){
-  shopList.push({id:Date.now(),name,note:'',done:false});
-  saveSL();renderShopList();toast('已加入：'+name);
-}
-
+function quickAddToList(name){shopList.push({id:Date.now(),name,note:'',done:false});saveSL();renderShopList();toast('已加入：'+name);}
 function addShopItem(){
-  const name=document.getElementById('sl-name').value.trim();
-  if(!name){toast('請輸入品項名稱');return;}
+  const name=document.getElementById('sl-name').value.trim();if(!name){toast('請輸入品項名稱');return;}
   shopList.push({id:Date.now(),name,note:document.getElementById('sl-note').value.trim(),done:false});
-  saveSL();
-  document.getElementById('sl-name').value='';document.getElementById('sl-note').value='';
+  saveSL();document.getElementById('sl-name').value='';document.getElementById('sl-note').value='';
   renderShopList();toast('已加入：'+name);
 }
-
 function renderShopList(){
+  // Sort: undone first
+  const sorted=[...shopList.filter(i=>!i.done),...shopList.filter(i=>i.done)];
   const el=document.getElementById('shop-list');
   const done=shopList.filter(i=>i.done).length;
   document.getElementById('sl-progress').textContent=done+'/'+shopList.length;
-  if(!shopList.length){el.innerHTML='<div class="empty" style="padding:24px 0"><span class="empty-icon">✅</span><span class="empty-text">清單是空的</span></div>';return;}
-  el.innerHTML=shopList.map(item=>`
+  if(!sorted.length){el.innerHTML=`<div class="empty" style="padding:24px 0"><span class="empty-icon">✅</span><span class="empty-text">清單是空的</span><span class="empty-hint">從上方快速新增或輸入品項</span></div>`;return;}
+  el.innerHTML=sorted.map(item=>`
     <div class="shop-item${item.done?' done':''}">
-      <div class="shop-check${item.done?' checked':''}" onclick="toggleShopItem(${item.id})">${item.done?'<span style="color:#fff;font-size:12px">✓</span>':''}</div>
+      <div class="shop-check${item.done?' checked':''}" onclick="toggleShopItem(${item.id})">${item.done?'<span style="color:#fff;font-size:11px;font-weight:700">✓</span>':''}</div>
       <div style="flex:1;min-width:0">
         <div class="shop-item-name${item.done?' done':''}">${item.name}</div>
         ${item.note?`<div class="shop-item-note">${item.note}</div>`:''}
       </div>
-      <button class="btn-del" onclick="removeShopItem(${item.id})">×</button>
+      <button style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:4px" onclick="removeShopItem(${item.id})">×</button>
     </div>`).join('');
 }
 function toggleShopItem(id){const i=shopList.find(x=>x.id===id);if(i){i.done=!i.done;saveSL();renderShopList();}}
@@ -666,11 +952,69 @@ function removeShopItem(id){shopList=shopList.filter(x=>x.id!==id);saveSL();rend
 function clearDoneItems(){shopList=shopList.filter(x=>!x.done);saveSL();renderShopList();}
 function clearAllItems(){if(!confirm('確定清空清單？'))return;shopList=[];saveSL();renderShopList();}
 
-// ── Rating ────────────────────────────────────────────
-function setRating(n){
-  tmpRating=n;
-  document.querySelectorAll('#rate-stars .star').forEach((s,i)=>s.classList.toggle('on',i<n));
+// ── Inventory ─────────────────────────────────────────
+function addInventory(){
+  const name=document.getElementById('inv-name').value.trim();
+  const qty=parseFloat(document.getElementById('inv-qty').value);
+  if(!name){toast('請輸入食材名稱');return;}
+  if(isNaN(qty)||qty<0){toast('請輸入正確數量');return;}
+  inventory.push({id:Date.now(),name,qty,unit:document.getElementById('inv-unit').value,lowThreshold:parseFloat(document.getElementById('inv-low').value)||0,expiry:document.getElementById('inv-exp').value});
+  saveInv();document.getElementById('inv-name').value='';document.getElementById('inv-qty').value='';document.getElementById('inv-low').value='';document.getElementById('inv-exp').value='';
+  renderInventory();updateTopSub();toast('已新增：'+name);
 }
+function renderInventory(){
+  const el=document.getElementById('inventory-list');
+  if(!inventory.length){el.innerHTML=`<div class="empty"><span class="empty-icon">📦</span><span class="empty-text">尚無庫存紀錄</span><span class="empty-hint">記錄食材庫存<br>不足時自動提醒</span></div>`;return;}
+  const now=new Date();
+  el.innerHTML=inventory.map(i=>{
+    const isLow=i.lowThreshold&&i.qty<=i.lowThreshold;
+    const expDiff=i.expiry?(new Date(i.expiry)-now)/(1000*60*60*24):-1;
+    const isExpSoon=expDiff>=0&&expDiff<=3;
+    const maxQty=Math.max(i.qty,i.lowThreshold||0)*2||10;
+    const pct=Math.min(100,Math.round(i.qty/maxQty*100));
+    return`<div class="inv-item ${isLow?'inv-low':''}" onclick="openEditInv(${i.id})" style="margin-bottom:8px">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:14px;font-weight:500;color:var(--text)">${i.name}</span>
+          <span style="font-size:13px;font-weight:700;color:${isLow?'var(--rust)':'var(--text)'}; font-family:var(--mono)">${i.qty}${i.unit}</span>
+        </div>
+        <div class="inv-bar-wrap"><div class="inv-bar" style="width:${pct}%;background:${isLow?'var(--rust)':'var(--sage)'}"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:3px">
+          <span style="font-size:11px;color:var(--text2);font-family:var(--mono)">${isLow?'⚠️ 庫存不足':isExpSoon?'⏰ 即將到期':''}</span>
+          ${i.expiry?`<span style="font-size:11px;color:${isExpSoon?'var(--amber)':'var(--text2)'};font-family:var(--mono)">到期 ${i.expiry}</span>`:''}
+        </div>
+      </div>
+      <span style="color:var(--text3);font-size:14px;padding-left:8px">›</span>
+    </div>`;
+  }).join('');
+}
+function openEditInv(id){
+  const i=inventory.find(x=>x.id===id);if(!i)return;
+  _editInvId=id;
+  document.getElementById('ei-name').value=i.name;
+  document.getElementById('ei-qty').value=i.qty;
+  document.getElementById('ei-unit').value=i.unit;
+  document.getElementById('ei-low').value=i.lowThreshold||'';
+  document.getElementById('ei-exp').value=i.expiry||'';
+  document.getElementById('edit-inv-overlay').style.display='flex';
+}
+function closeEditInv(){document.getElementById('edit-inv-overlay').style.display='none';_editInvId=null;}
+function saveEditInv(){
+  if(!_editInvId)return;const idx=inventory.findIndex(x=>x.id===_editInvId);if(idx===-1)return;
+  const name=document.getElementById('ei-name').value.trim();
+  const qty=parseFloat(document.getElementById('ei-qty').value);
+  if(!name||isNaN(qty)){toast('請填入正確資料');return;}
+  inventory[idx]={...inventory[idx],name,qty,unit:document.getElementById('ei-unit').value,lowThreshold:parseFloat(document.getElementById('ei-low').value)||0,expiry:document.getElementById('ei-exp').value};
+  saveInv();closeEditInv();renderInventory();updateTopSub();toast('已更新：'+name);
+}
+function deleteEditInv(){
+  if(!_editInvId)return;if(!confirm('確定刪除？'))return;
+  inventory=inventory.filter(x=>x.id!==_editInvId);saveInv();closeEditInv();renderInventory();updateTopSub();
+}
+
+// ── Rating ────────────────────────────────────────────
+function setRating(n){tmpRating=n;document.querySelectorAll('#rate-stars .star').forEach((s,i)=>s.classList.toggle('on',i<n));}
+function setEditRating(n){_editRRating=n;document.querySelectorAll('#er-stars .star').forEach((s,i)=>s.classList.toggle('on',i<n));}
 
 // ── Recipe ────────────────────────────────────────────
 function refreshIngrSelect(){
@@ -704,7 +1048,7 @@ function removeStep(i){tmpSteps.splice(i,1);renderStepsBuilder();}
 function addRecipe(){
   const name=document.getElementById('r-name').value.trim();if(!name){toast('請輸入料理名稱');return;}
   const totalCost=tmpIngredients.reduce((a,x)=>a+x.cost,0);
-  const servings=parseInt(document.getElementById('r-servings').value)||2;
+  const servings=parseFloat(document.getElementById('r-servings').value)||2;
   const servingsUnit=document.getElementById('r-servings-unit').value;
   recipes.unshift({id:Date.now(),name,type:document.getElementById('r-type').value,date:document.getElementById('r-date').value,servings,servingsUnit,time:parseInt(document.getElementById('r-time').value)||0,ingredients:[...tmpIngredients],steps:tmpSteps.filter(s=>s.trim()),totalCost:parseFloat(totalCost.toFixed(0)),costPerUnit:parseFloat((totalCost/servings).toFixed(1)),note:document.getElementById('r-note').value.trim(),rating:tmpRating});
   saveR();
@@ -715,8 +1059,7 @@ function addRecipe(){
   updateTopSub();toast('已儲存：'+name);
 }
 
-let expandedRecipes=new Set();
-let recipeServings={};
+let expandedRecipes=new Set(),recipeServings={};
 
 function updateRecipeStats(){
   const now=new Date();const m=recipes.filter(r=>{const d=new Date(r.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
@@ -732,14 +1075,15 @@ function renderRecipes(){
   const ratingF=document.getElementById('rfl-rating').value;
   const filtered=recipes.filter(r=>(!typeF||r.type===typeF)&&(!ratingF||r.rating>=parseInt(ratingF)));
   const el=document.getElementById('recipe-list');
-  if(!filtered.length){el.innerHTML='<div class="empty"><span class="empty-icon">🍳</span><span class="empty-text">尚無料理紀錄</span></div>';return;}
+  if(!filtered.length){el.innerHTML=`<div class="empty"><span class="empty-icon">🍳</span><span class="empty-text">尚無料理紀錄</span><span class="empty-hint">點下方「料理」頁籤<br>記錄你做的第一道菜</span></div>`;return;}
   el.innerHTML=filtered.map(r=>{
     const exp=expandedRecipes.has(r.id);
-    const sv=recipeServings[r.id]||r.servings;const sunit=r.servingsUnit||'人份';
+    const sv=recipeServings[r.id]||r.servings;
+    const sunit=r.servingsUnit||'人份';
     const ratio=sv/r.servings;
     const stars=r.rating?'★'.repeat(r.rating)+'☆'.repeat(5-r.rating):'';
-    const ingrHtml=r.ingredients.length?r.ingredients.map(x=>`<div class="ingr-row"><div class="ingr-dot"></div><span>${x.name}</span><span style="color:var(--ink3);margin-left:4px;font-family:var(--mono);font-size:12px">${(x.qty*ratio).toFixed(1)}${x.unit}</span><span style="margin-left:auto;color:var(--ink3);font-family:var(--mono);font-size:12px">$${(x.cost*ratio).toFixed(0)}</span></div>`).join(''):'<div style="color:var(--ink3);font-size:13px">未記錄食材</div>';
-    const stepsHtml=r.steps.length?r.steps.map((s,i)=>`<div class="step-row"><div class="step-num">${i+1}</div><div class="step-text">${s}</div></div>`).join(''):'<div style="color:var(--ink3);font-size:13px">未記錄步驟</div>';
+    const ingrHtml=r.ingredients.length?r.ingredients.map(x=>`<div class="ingr-row"><div class="ingr-dot"></div><span>${x.name}</span><span style="color:var(--text2);margin-left:4px;font-family:var(--mono);font-size:12px">${(x.qty*ratio).toFixed(1)}${x.unit}</span><span style="margin-left:auto;color:var(--text2);font-family:var(--mono);font-size:12px">$${(x.cost*ratio).toFixed(0)}</span></div>`).join(''):'<div style="color:var(--text2);font-size:13px">未記錄食材</div>';
+    const stepsHtml=r.steps.length?r.steps.map((s,i)=>`<div class="step-row"><div class="step-num">${i+1}</div><div class="step-text">${s}</div></div>`).join(''):'<div style="color:var(--text2);font-size:13px">未記錄步驟</div>';
     return `<div class="recipe-card">
       <div class="recipe-header" onclick="toggleRecipe(${r.id})">
         <div class="recipe-icon">${r.type}</div>
@@ -754,46 +1098,68 @@ function renderRecipes(){
       </div>
       ${exp?`<div class="recipe-body">
         <div class="servings-ctrl">
-          <label style="margin:0;text-transform:none;font-size:13px;color:var(--ink2)">調整數量（${sunit}）</label>
+          <label style="margin:0;text-transform:none;font-size:13px;color:var(--text2);flex:1">調整數量（${sunit}）</label>
           <button class="sv-btn" onclick="event.stopPropagation();changeServings(${r.id},-1)">−</button>
           <span class="sv-num">${sv}</span>
           <button class="sv-btn" onclick="event.stopPropagation();changeServings(${r.id},1)">＋</button>
         </div>
         <div class="recipe-section"><div class="rs-title">食材（${sv}${sunit}）</div>${ingrHtml}</div>
         <div class="recipe-section"><div class="rs-title">做法</div>${stepsHtml}</div>
-        ${r.note?`<div class="recipe-section"><div class="rs-title">備註</div><div style="font-size:14px;line-height:1.7">${r.note}</div></div>`:''}
-        <div style="margin-top:12px;display:flex;justify-content:flex-end"><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();delRecipe(${r.id})">刪除</button></div>
+        ${r.note?`<div class="recipe-section"><div class="rs-title">備註</div><div style="font-size:14px;line-height:1.7;color:var(--text)">${r.note}</div></div>`:''}
+        <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn btn-sm btn-gold" onclick="event.stopPropagation();openEditR(${r.id})">編輯</button>
+          <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();delRecipe(${r.id})">刪除</button>
+        </div>
       </div>`:''}
       <button class="expand-toggle" onclick="toggleRecipe(${r.id})">${exp?'▲ 收起':'▼ 查看食材與做法'}</button>
     </div>`;
   }).join('');
 }
-
-function changeServings(id,delta){
-  const r=recipes.find(x=>x.id===id);if(!r)return;
-  const cur=recipeServings[id]||r.servings;
-  const nv=Math.max(1,cur+delta);
-  recipeServings[id]=nv;renderRecipes();
-}
+function changeServings(id,delta){const r=recipes.find(x=>x.id===id);if(!r)return;const cur=recipeServings[id]||r.servings;recipeServings[id]=Math.max(0.5,parseFloat((cur+delta).toFixed(1)));renderRecipes();}
 function toggleRecipe(id){if(expandedRecipes.has(id))expandedRecipes.delete(id);else expandedRecipes.add(id);renderRecipes();}
-function delRecipe(id){if(!confirm('確定刪除這道料理？'))return;recipes=recipes.filter(r=>r.id!==id);expandedRecipes.delete(id);delete recipeServings[id];saveR();renderRecipes();updateRecipeStats();updateTopSub();}
+function delRecipe(id){if(!confirm('確定刪除？'))return;recipes=recipes.filter(r=>r.id!==id);expandedRecipes.delete(id);delete recipeServings[id];saveR();renderRecipes();updateRecipeStats();updateTopSub();}
+
+// ── Edit Recipe ───────────────────────────────────────
+function openEditR(id){
+  const r=recipes.find(x=>x.id===id);if(!r)return;
+  _editRId=id;_editRRating=r.rating||0;
+  document.getElementById('er-name').value=r.name;
+  document.getElementById('er-type').value=r.type;
+  document.getElementById('er-date').value=r.date;
+  document.getElementById('er-servings').value=r.servings;
+  document.getElementById('er-servings-unit').value=r.servingsUnit||'人份';
+  document.getElementById('er-time').value=r.time||'';
+  document.getElementById('er-note').value=r.note||'';
+  document.querySelectorAll('#er-stars .star').forEach((s,i)=>s.classList.toggle('on',i<_editRRating));
+  document.getElementById('edit-r-overlay').style.display='flex';
+}
+function closeEditR(){document.getElementById('edit-r-overlay').style.display='none';_editRId=null;}
+function saveEditR(){
+  if(!_editRId)return;const idx=recipes.findIndex(x=>x.id===_editRId);if(idx===-1)return;
+  const name=document.getElementById('er-name').value.trim();if(!name){toast('請輸入料理名稱');return;}
+  const servings=parseFloat(document.getElementById('er-servings').value)||2;
+  const totalCost=recipes[idx].totalCost;
+  recipes[idx]={...recipes[idx],name,type:document.getElementById('er-type').value,date:document.getElementById('er-date').value,servings,servingsUnit:document.getElementById('er-servings-unit').value,time:parseInt(document.getElementById('er-time').value)||0,note:document.getElementById('er-note').value.trim(),rating:_editRRating,costPerUnit:parseFloat((totalCost/servings).toFixed(1))};
+  saveR();closeEditR();renderRecipes();updateRecipeStats();toast('已更新：'+name);
+}
+function deleteEditR(){
+  if(!_editRId)return;if(!confirm('確定刪除這道料理？'))return;
+  recipes=recipes.filter(x=>x.id!==_editRId);saveR();closeEditR();renderRecipes();updateRecipeStats();updateTopSub();
+}
 
 // ── Recommend ─────────────────────────────────────────
 function addAvailIngr(){
-  const name=document.getElementById('avail-ingr-input').value.trim();
-  if(!name)return;
+  const name=document.getElementById('avail-ingr-input').value.trim();if(!name)return;
   if(!availIngredients.includes(name))availIngredients.push(name);
   document.getElementById('avail-ingr-input').value='';
   renderAvailTags();renderRecommend();
 }
 function removeAvailIngr(name){availIngredients=availIngredients.filter(x=>x!==name);renderAvailTags();renderRecommend();}
-function renderAvailTags(){
-  document.getElementById('avail-ingr-tags').innerHTML=availIngredients.map(name=>`<span class="ingr-tag" style="background:var(--sage-bg);color:var(--sage-text)">${name}<button onclick="removeAvailIngr('${name}')">×</button></span>`).join('');
-}
+function renderAvailTags(){document.getElementById('avail-ingr-tags').innerHTML=availIngredients.map(name=>`<span class="ingr-tag" style="background:var(--sage-dim);color:var(--sage);border-color:rgba(63,185,80,.2)">${name}<button onclick="removeAvailIngr('${name}')">×</button></span>`).join('');}
 function renderRecommend(){
   const el=document.getElementById('rec-results');
-  if(!availIngredients.length){el.innerHTML='<div style="color:var(--ink3);font-size:13px;font-family:var(--mono)">請先輸入你手邊有的食材</div>';return;}
-  if(!recipes.length){el.innerHTML='<div style="color:var(--ink3);font-size:13px;font-family:var(--mono)">還沒有料理紀錄，先去新增幾道料理吧</div>';return;}
+  if(!availIngredients.length){el.innerHTML='<div style="color:var(--text2);font-size:13px;font-family:var(--mono)">請先輸入你手邊有的食材</div>';return;}
+  if(!recipes.length){el.innerHTML='<div style="color:var(--text2);font-size:13px;font-family:var(--mono)">還沒有料理紀錄</div>';return;}
   const avail=availIngredients.map(x=>x.toLowerCase());
   const scored=recipes.map(r=>{
     const rIngr=r.ingredients.map(x=>x.name.toLowerCase());
@@ -801,15 +1167,12 @@ function renderRecommend(){
     const pct=rIngr.length?Math.round(matched.length/rIngr.length*100):0;
     return{r,matched,pct};
   }).filter(x=>x.pct>0).sort((a,b)=>b.pct-a.pct);
-  if(!scored.length){el.innerHTML='<div style="color:var(--ink3);font-size:13px;font-family:var(--mono)">沒有找到符合的料理，試試新增更多食材</div>';return;}
+  if(!scored.length){el.innerHTML='<div style="color:var(--text2);font-size:13px;font-family:var(--mono)">沒有找到符合的料理</div>';return;}
   el.innerHTML=scored.map(({r,matched,pct})=>`
     <div class="rec-recipe">
       <div style="display:flex;align-items:center;gap:10px">
         <span style="font-size:22px">${r.type}</span>
-        <div style="flex:1">
-          <div style="font-size:15px;font-weight:500">${r.name}</div>
-          <div class="rec-match">食材符合 ${pct}%（${matched.length}/${r.ingredients.length}）</div>
-        </div>
+        <div style="flex:1"><div style="font-size:15px;font-weight:600;color:var(--text)">${r.name}</div><div class="rec-match">食材符合 ${pct}%（${matched.length}/${r.ingredients.length}）</div></div>
         ${r.rating?`<span style="color:var(--gold);font-size:13px">${'★'.repeat(r.rating)}</span>`:''}
       </div>
       ${matched.length?`<div style="margin-top:8px">${matched.map(m=>`<span class="tag-chip">${m}</span>`).join('')}</div>`:''}
@@ -829,7 +1192,6 @@ function removeIncCat(c){if(incomeCategories.length<=1){toast('至少保留一�
 function addIncome(){
   const amount=parseFloat(document.getElementById('inc-amount').value);
   if(isNaN(amount)||amount<=0){toast('請輸入正確金額');return;}
-  if(!selectedIncCat){toast('請選擇分類');return;}
   incomes.unshift({id:Date.now(),amount,cat:selectedIncCat,date:document.getElementById('inc-date').value,note:document.getElementById('inc-note').value.trim()});
   saveI();document.getElementById('inc-amount').value='';document.getElementById('inc-note').value='';
   updateIncomeStats();renderIncomes();renderIncomeBreakdown();updateTopSub();toast('已新增收入 $'+amount.toLocaleString());
@@ -850,224 +1212,110 @@ function renderIncomes(){
   const filtered=incomes.filter(r=>{if(catF&&r.cat!==catF)return false;if(monF!==''&&new Date(r.date).getMonth()!==parseInt(monF))return false;return true;});
   const el=document.getElementById('income-list');
   if(!filtered.length){el.innerHTML='<div class="empty" style="padding:20px 0"><span class="empty-icon">💰</span><span class="empty-text">尚無收入紀錄</span></div>';return;}
-  el.innerHTML=filtered.map(r=>`<div class="ri"><div class="ri-icon" style="background:var(--slate-bg);color:var(--slate-text);font-size:12px;font-weight:600;font-family:var(--mono)">${r.cat.slice(0,2)}</div><div class="ri-main"><div class="ri-name">${r.cat}${r.note?` <span style="font-weight:400;color:var(--ink3);font-size:12px">(${r.note})</span>`:''}</div><div class="ri-meta">${r.date}</div></div><div class="ri-right"><div class="ri-price" style="color:var(--slate)">+$${r.amount.toLocaleString()}</div></div><button class="btn-del" onclick="delIncome(${r.id})">×</button></div>`).join('');
+  el.innerHTML=filtered.map(r=>`<div class="ri"><div class="ri-icon" style="background:var(--slate-dim);font-size:12px;font-weight:700;font-family:var(--mono);color:var(--slate)">${r.cat.slice(0,2)}</div><div class="ri-main"><div class="ri-name">${r.cat}${r.note?` <span style="font-weight:400;color:var(--text2);font-size:12px">(${r.note})</span>`:''}</div><div class="ri-meta">${r.date}</div></div><div class="ri-right"><div class="ri-price" style="color:var(--slate)">+$${r.amount.toLocaleString()}</div></div><button style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:4px" onclick="delIncome(${r.id})">×</button></div>`).join('');
 }
 function delIncome(id){if(!confirm('確定刪除？'))return;incomes=incomes.filter(r=>r.id!==id);saveI();updateIncomeStats();renderIncomes();renderIncomeBreakdown();updateTopSub();}
 function renderIncomeBreakdown(){
   const now=new Date();const m=incomes.filter(r=>{const d=new Date(r.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
   const el=document.getElementById('income-breakdown');
-  if(!m.length){el.innerHTML='<div style="color:var(--ink3);font-size:13px;padding:8px 0;font-family:var(--mono)">本月尚無收入紀錄</div>';return;}
+  if(!m.length){el.innerHTML='<div style="color:var(--text2);font-size:13px;padding:8px 0;font-family:var(--mono)">本月尚無收入紀錄</div>';return;}
   const bycat={};m.forEach(r=>bycat[r.cat]=(bycat[r.cat]||0)+r.amount);
   const total=Object.values(bycat).reduce((a,v)=>a+v,0);
   const rows=Object.entries(bycat).sort((a,b)=>b[1]-a[1]);const maxVal=rows[0][1];
-  el.innerHTML=rows.map(([cat,amt])=>`<div class="income-bar-row"><span class="income-bar-label">${cat}</span><div class="income-bar" style="width:${Math.round(amt/maxVal*148)}px"></div><span class="income-bar-val">$${amt.toLocaleString()} <span style="color:var(--ink3);font-size:10px">${Math.round(amt/total*100)}%</span></span></div>`).join('');
+  el.innerHTML=rows.map(([cat,amt])=>`<div class="income-bar-row"><span class="income-bar-label">${cat}</span><div class="income-bar" style="width:${Math.round(amt/maxVal*148)}px"></div><span class="income-bar-val">$${amt.toLocaleString()} <span style="color:var(--text2);font-size:10px">${Math.round(amt/total*100)}%</span></span></div>`).join('');
 }
 
 // ── Insights ──────────────────────────────────────────
-function renderInsights(){
-  renderTrendChart();
-  renderIncomeVsSpend();
-  renderTopSpend();
-  renderTopFreq();
-}
+function renderInsights(){renderTrendChart();renderIncomeVsSpend();renderTopSpend();renderTopFreq();}
 
 function getMonthKey(date){const d=new Date(date);return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}
 function getMonthLabel(key){const[y,m]=key.split('-');return`${m}月`;}
 
 function renderTrendChart(){
-  const now=new Date();
-  const months=[];
-  for(let i=5;i>=0;i--){
-    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-    months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);
-  }
-  const data=months.map(key=>{
-    const total=groceries.filter(g=>getMonthKey(g.date)===key).reduce((a,g)=>a+g.price,0);
-    return{key,label:getMonthLabel(key),total};
-  });
+  const now=new Date();const months=[];
+  for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);}
+  const data=months.map(key=>{const total=groceries.filter(g=>getMonthKey(g.date)===key).reduce((a,g)=>a+g.price,0);return{key,label:getMonthLabel(key),total};});
   const maxVal=Math.max(...data.map(d=>d.total),1);
   const currentKey=getMonthKey(today);
   const el=document.getElementById('trend-chart');
-  const W=el.parentElement.clientWidth||320;
-  const H=160;
+  const W=el.parentElement.clientWidth||320;const H=160;
   const padL=8,padR=8,padT=28,padB=28;
-  const cW=W-padL-padR;
-  const cH=H-padT-padB;
-  const n=data.length;
-  // compute points
-  const pts=data.map((d,i)=>({
-    x:padL+i*(cW/(n-1)),
-    y:padT+cH-(d.total/maxVal*cH),
-    total:d.total,label:d.label,key:d.key
-  }));
-  // smooth bezier path
-  function bezierPath(pts){
-    if(pts.length<2)return'';
-    let d=`M${pts[0].x},${pts[0].y}`;
-    for(let i=1;i<pts.length;i++){
-      const prev=pts[i-1],cur=pts[i];
-      const cpx=(prev.x+cur.x)/2;
-      d+=` C${cpx},${prev.y} ${cpx},${cur.y} ${cur.x},${cur.y}`;
-    }
-    return d;
-  }
-  const path=bezierPath(pts);
-  // fill path (close to bottom)
-  const fillPath=path+` L${pts[pts.length-1].x},${padT+cH} L${pts[0].x},${padT+cH} Z`;
-  // grid lines (3 horizontal)
-  const gridLines=[0.25,0.5,0.75,1].map(f=>{
-    const y=padT+cH-(f*cH);
-    const val=Math.round(maxVal*f);
-    return `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--paper3)" stroke-width="1"/>
-    <text x="${padL}" y="${y-3}" font-size="9" fill="var(--ink4)" font-family="monospace">$${val>=1000?Math.round(val/1000)+'k':val}</text>`;
-  }).join('');
-  // dots and labels
-  const dots=pts.map((p,i)=>{
-    const isCurrent=data[i].key===currentKey;
-    return `<circle cx="${p.x}" cy="${p.y}" r="${isCurrent?5:3.5}" fill="${isCurrent?'var(--sage)':'var(--paper)'}" stroke="${isCurrent?'var(--sage)':'var(--ink4)'}" stroke-width="${isCurrent?0:1.5}"/>
-    ${p.total>0?`<text x="${p.x}" y="${p.y-9}" text-anchor="middle" font-size="9" fill="${isCurrent?'var(--sage)':'var(--ink3)'}" font-family="monospace" font-weight="${isCurrent?600:400}">$${p.total>=1000?Math.round(p.total/1000)+'k':p.total}</text>`:''}
-    <text x="${p.x}" y="${H-6}" text-anchor="middle" font-size="10" fill="${isCurrent?'var(--sage)':'var(--ink3)'}" font-family="monospace" font-weight="${isCurrent?600:400}">${p.label}</text>`;
-  }).join('');
-
-  el.outerHTML=`<svg id="trend-chart" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="overflow:visible">
-    ${gridLines}
-    <defs>
-      <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="var(--sage)" stop-opacity="0.18"/>
-        <stop offset="100%" stop-color="var(--sage)" stop-opacity="0.01"/>
-      </linearGradient>
-    </defs>
-    <path d="${fillPath}" fill="url(#chartFill)"/>
-    <path d="${path}" fill="none" stroke="var(--sage)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-    ${dots}
-  </svg>`;
+  const cW=W-padL-padR,cH=H-padT-padB,n=data.length;
+  const pts=data.map((d,i)=>({x:padL+i*(cW/(n-1)),y:padT+cH-(d.total/maxVal*cH),total:d.total,label:d.label,key:d.key}));
+  function bezier(pts){if(pts.length<2)return'';let p=`M${pts[0].x},${pts[0].y}`;for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],cx=(a.x+b.x)/2;p+=` C${cx},${a.y} ${cx},${b.y} ${b.x},${b.y}`;}return p;}
+  const path=bezier(pts);
+  const fill=path+` L${pts[n-1].x},${padT+cH} L${pts[0].x},${padT+cH} Z`;
+  const gridLines=[0.25,0.5,0.75,1].map(f=>{const y=padT+cH-(f*cH);const v=Math.round(maxVal*f);return`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="rgba(255,255,255,.06)" stroke-width="1"/><text x="${padL}" y="${y-3}" font-size="9" fill="rgba(139,148,158,.6)" font-family="monospace">$${v>=1000?Math.round(v/1000)+'k':v}</text>`;}).join('');
+  const dots=pts.map((p,i)=>{const isCur=data[i].key===currentKey;return`<circle cx="${p.x}" cy="${p.y}" r="${isCur?5:3.5}" fill="${isCur?'#e3a84a':'rgba(13,17,23,.8)'}" stroke="${isCur?'#e3a84a':'rgba(139,148,158,.5)'}" stroke-width="${isCur?0:1.5}"/>${p.total>0?`<text x="${p.x}" y="${p.y-9}" text-anchor="middle" font-size="9" fill="${isCur?'#e3a84a':'rgba(139,148,158,.8)'}" font-family="monospace" font-weight="${isCur?700:400}">$${p.total>=1000?Math.round(p.total/1000)+'k':p.total}</text>`:''}<text x="${p.x}" y="${H-6}" text-anchor="middle" font-size="10" fill="${isCur?'#e3a84a':'rgba(139,148,158,.6)'}" font-family="monospace" font-weight="${isCur?700:400}">${p.label}</text>`;}).join('');
+  el.setAttribute('width',W);
+  el.innerHTML=`${gridLines}<defs><linearGradient id="cFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e3a84a" stop-opacity="0.2"/><stop offset="100%" stop-color="#e3a84a" stop-opacity="0.01"/></linearGradient></defs><path d="${fill}" fill="url(#cFill)"/><path d="${path}" fill="none" stroke="#e3a84a" stroke-width="2.5" stroke-linecap="round"/>${dots}`;
 }
 
 function renderIncomeVsSpend(){
   const now=new Date();
-  const monthIncome=incomes.filter(r=>{const d=new Date(r.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}).reduce((a,r)=>a+r.amount,0);
-  const monthSpend=groceries.filter(r=>{const d=new Date(r.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}).reduce((a,r)=>a+r.price,0);
+  const mI=incomes.filter(r=>{const d=new Date(r.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}).reduce((a,r)=>a+r.amount,0);
+  const mS=groceries.filter(r=>{const d=new Date(r.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}).reduce((a,r)=>a+r.price,0);
   const el=document.getElementById('income-vs-spend');
-  if(!monthIncome&&!monthSpend){el.innerHTML='<div style="color:var(--ink3);font-size:13px;font-family:var(--mono)">本月尚無資料</div>';return;}
-  const pct=monthIncome?Math.min(100,Math.round(monthSpend/monthIncome*100)):100;
-  const left=monthIncome-monthSpend;
-  el.innerHTML=`
-    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-      <div><div style="font-size:10px;color:var(--ink3);font-family:var(--mono);margin-bottom:2px">本月收入</div><div style="font-size:18px;font-weight:600;color:var(--slate)">$${monthIncome.toLocaleString()}</div></div>
-      <div style="text-align:right"><div style="font-size:10px;color:var(--ink3);font-family:var(--mono);margin-bottom:2px">買菜花費</div><div style="font-size:18px;font-weight:600;color:var(--rust)">$${monthSpend.toLocaleString()}</div></div>
-    </div>
-    <div style="height:10px;background:var(--paper3);border-radius:5px;margin-bottom:8px;overflow:hidden">
-      <div style="height:100%;width:${pct}%;background:${pct>80?'var(--rust)':pct>50?'var(--gold)':'var(--sage)'};border-radius:5px;transition:width .5s"></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:12px;font-family:var(--mono)">
-      <span style="color:var(--ink3)">買菜佔收入 ${pct}%</span>
-      <span style="color:${left>=0?'var(--sage)':'var(--rust)'}">${left>=0?'剩餘':'超支'} $${Math.abs(left).toLocaleString()}</span>
-    </div>`;
+  if(!mI&&!mS){el.innerHTML='<div style="color:var(--text2);font-size:13px;font-family:var(--mono)">本月尚無資料</div>';return;}
+  const pct=mI?Math.min(100,Math.round(mS/mI*100)):100;
+  const left=mI-mS;
+  const barColor=pct>80?'var(--rust)':pct>50?'var(--amber)':'var(--sage)';
+  el.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:10px"><div><div style="font-size:10px;color:var(--text2);font-family:var(--mono);margin-bottom:2px">本月收入</div><div style="font-size:18px;font-weight:700;color:var(--slate)">$${mI.toLocaleString()}</div></div><div style="text-align:right"><div style="font-size:10px;color:var(--text2);font-family:var(--mono);margin-bottom:2px">買菜花費</div><div style="font-size:18px;font-weight:700;color:var(--rust)">$${mS.toLocaleString()}</div></div></div><div style="height:8px;background:var(--glass3);border-radius:4px;margin-bottom:8px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${barColor};border-radius:4px;transition:width .5s;box-shadow:0 0 10px ${barColor}"></div></div><div style="display:flex;justify-content:space-between;font-size:12px;font-family:var(--mono)"><span style="color:var(--text2)">買菜佔收入 ${pct}%</span><span style="color:${left>=0?'var(--sage)':'var(--rust)'}">${left>=0?'剩餘':'超支'} $${Math.abs(left).toLocaleString()}</span></div>`;
 }
 
 function renderTopSpend(){
-  const byName={};
-  groceries.forEach(g=>{
-    if(!byName[g.name])byName[g.name]={total:0,count:0};
-    byName[g.name].total+=g.price;byName[g.name].count++;
-  });
+  const byName={};groceries.forEach(g=>{if(!byName[g.name])byName[g.name]={total:0,count:0};byName[g.name].total+=g.price;byName[g.name].count++;});
   const rows=Object.entries(byName).sort((a,b)=>b[1].total-a[1].total).slice(0,5);
   const el=document.getElementById('top-spend');
-  if(!rows.length){el.innerHTML='<div style="color:var(--ink3);font-size:13px;font-family:var(--mono)">尚無資料</div>';return;}
+  if(!rows.length){el.innerHTML='<div style="color:var(--text2);font-size:13px;font-family:var(--mono)">尚無資料</div>';return;}
   const maxVal=rows[0][1].total;
-  el.innerHTML=rows.map(([name,d],i)=>`
-    <div class="ranking-row">
-      <div class="ranking-num${i<3?' top':''}">${i+1}</div>
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;justify-content:space-between"><span class="ranking-name">${name}</span><span class="ranking-val">$${d.total.toLocaleString()}</span></div>
-        <div class="ranking-bar-bg"><div class="ranking-bar-fill" style="width:${Math.round(d.total/maxVal*100)}%"></div></div>
-      </div>
-    </div>`).join('');
+  el.innerHTML=rows.map(([name,d],i)=>`<div class="ranking-row"><div class="ranking-num${i<3?' top':''}">${i+1}</div><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between"><span class="ranking-name">${name}</span><span class="ranking-val">$${d.total.toLocaleString()}</span></div><div class="ranking-bar-bg"><div class="ranking-bar-fill" style="width:${Math.round(d.total/maxVal*100)}%"></div></div></div></div>`).join('');
 }
 
 function renderTopFreq(){
-  const byName={};
-  groceries.forEach(g=>{byName[g.name]=(byName[g.name]||0)+1;});
+  const byName={};groceries.forEach(g=>{byName[g.name]=(byName[g.name]||0)+1;});
   const rows=Object.entries(byName).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const el=document.getElementById('top-freq');
-  if(!rows.length){el.innerHTML='<div style="color:var(--ink3);font-size:13px;font-family:var(--mono)">尚無資料</div>';return;}
+  if(!rows.length){el.innerHTML='<div style="color:var(--text2);font-size:13px;font-family:var(--mono)">尚無資料</div>';return;}
   const maxVal=rows[0][1];
-  el.innerHTML=rows.map(([name,count],i)=>`
-    <div class="ranking-row">
-      <div class="ranking-num${i<3?' top':''}">${i+1}</div>
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;justify-content:space-between"><span class="ranking-name">${name}</span><span class="ranking-val">${count} 次</span></div>
-        <div class="ranking-bar-bg"><div class="ranking-bar-fill" style="width:${Math.round(count/maxVal*100)}%;background:var(--slate)"></div></div>
-      </div>
-    </div>`).join('');
+  el.innerHTML=rows.map(([name,count],i)=>`<div class="ranking-row"><div class="ranking-num${i<3?' top':''}">${i+1}</div><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between"><span class="ranking-name">${name}</span><span class="ranking-val">${count} 次</span></div><div class="ranking-bar-bg"><div class="ranking-bar-fill" style="width:${Math.round(count/maxVal*100)}%;background:var(--slate)"></div></div></div></div>`).join('');
 }
 
 // ── Compare ───────────────────────────────────────────
 function renderCompare(){
   const el=document.getElementById('compare-content');
-  if(!groceries.length){el.innerHTML='<div class="empty" style="margin-top:14px"><span class="empty-icon">📊</span><span class="empty-text">尚無買菜紀錄</span></div>';return;}
+  if(!groceries.length){el.innerHTML='<div class="empty" style="margin-top:14px"><span class="empty-icon">⚖️</span><span class="empty-text">尚無買菜紀錄</span></div>';return;}
   const byName={};groceries.forEach(r=>{if(!byName[r.name])byName[r.name]=[];byName[r.name].push(r);});
   const multi=Object.entries(byName).filter(([,v])=>[...new Set(v.map(r=>r.store))].length>=2);
   const rest=Object.entries(byName).filter(([n])=>!multi.find(([m])=>m===n));
   let html='';
-  if(multi.length){html+='<div style="font-size:10px;font-weight:500;color:var(--ink3);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin:2px 0 10px">可比價品項</div><div class="card" style="margin-top:0">'+multi.map(([n,items],idx)=>(idx>0?'<div class="divider"></div>':'')+buildCG(n,items,true)).join('')+'</div>';}
-  if(rest.length){html+=`<div style="font-size:10px;font-weight:500;color:var(--ink3);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin:${multi.length?12:2}px 0 10px">其他品項</div>`;if(!multi.length)html+='<div style="font-size:12px;color:var(--ink3);margin-bottom:10px;font-family:var(--mono)">同一品項在兩個以上地點購買即可自動比價</div>';html+='<div class="card" style="margin-top:0">'+rest.map(([n,items],idx)=>(idx>0?'<div class="divider"></div>':'')+buildCG(n,items,false)).join('')+'</div>';}
+  if(multi.length){html+='<div style="font-size:10px;font-weight:600;color:var(--text2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin:2px 0 10px">可比價品項</div><div class="card" style="margin-top:0">'+multi.map(([n,items],idx)=>(idx>0?'<div class="divider"></div>':'')+buildCG(n,items,true)).join('')+'</div>';}
+  if(rest.length){html+=`<div style="font-size:10px;font-weight:600;color:var(--text2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin:${multi.length?12:2}px 0 10px">其他品項</div><div class="card" style="margin-top:0">`;if(!multi.length)html+='<div style="font-size:12px;color:var(--text2);margin-bottom:10px;font-family:var(--mono)">同一品項在兩個以上地點購買即可自動比價</div>';html+=rest.map(([n,items],idx)=>(idx>0?'<div class="divider"></div>':'')+buildCG(n,items,false)).join('')+'</div>';}
   el.innerHTML=html;
 }
 function buildCG(name,items,canCompare){
   const byStore={};items.forEach(r=>{const up=r.qty?r.price/r.qty:r.price;if(!byStore[r.store]||up<byStore[r.store].up)byStore[r.store]={up,unit:r.unit};});
   const rows=Object.entries(byStore).sort((a,b)=>a[1].up-b[1].up);const maxUp=Math.max(...rows.map(r=>r[1].up));
-  return `<div class="cg"><div class="cg-title">${name}</div>`+rows.map(([store,d],i)=>`<div class="cg-row"><span class="cg-store">${store}</span><div class="cg-bar" style="width:${Math.round(d.up/maxUp*144)}px;background:${i===0&&canCompare?'var(--sage)':'var(--paper3)'}"></div><span class="cg-val">$${d.up.toFixed(1)}/${d.unit}${i===0&&canCompare&&rows.length>1?'<span class="tag-cheap">最便宜</span>':''}</span></div>`).join('')+'</div>';
+  return`<div class="cg"><div class="cg-title">${name}</div>`+rows.map(([store,d],i)=>`<div class="cg-row"><span class="cg-store">${store}</span><div class="cg-bar" style="width:${Math.round(d.up/maxUp*144)}px;background:${i===0&&canCompare?'var(--sage)':'rgba(255,255,255,.1)'}"></div><span class="cg-val">$${d.up.toFixed(1)}/${d.unit}${i===0&&canCompare&&rows.length>1?'<span class="tag-cheap">最便宜</span>':''}</span></div>`).join('')+'</div>';
 }
 
 // ── Backup ────────────────────────────────────────────
-function renderBackupStats(){const el=document.getElementById('backup-stats');el.innerHTML=`<b>買菜紀錄：</b>${groceries.length} 筆<br><b>料理紀錄：</b>${recipes.length} 道<br><b>收入紀錄：</b>${incomes.length} 筆<br><b>購物清單：</b>${shopList.length} 項<br><b>儲存位置：</b>Firebase 雲端（即時同步）`;}
-function exportData(){const data={version:3,exportedAt:new Date().toISOString(),groceries,recipes,incomes,incomeCategories,shopList};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`廚房記帳本備份_${today}.json`;a.click();URL.revokeObjectURL(url);toast('備份檔已下載！');}
-function exportCSV(){const h='日期,品項,分類,地點,價格,數量,單位,單價,備註';const rows=groceries.map(g=>[g.date,g.name,g.cat,g.store,g.price,g.qty,g.unit,(g.qty?g.price/g.qty:g.price).toFixed(1),g.note||''].map(v=>`"${v}"`).join(','));const ih='\n\n日期,收入分類,金額,備註';const ir=incomes.map(r=>[r.date,r.cat,r.amount,r.note||''].map(v=>`"${v}"`).join(','));const rh='\n\n日期,料理名稱,類型,份數,評分,食材成本,每人成本';const rr=recipes.map(r=>[r.date,r.name,r.type,r.servings,r.rating||'',r.totalCost,r.costPerServing].map(v=>`"${v}"`).join(','));const csv='\uFEFF'+h+'\n'+rows.join('\n')+ih+'\n'+ir.join('\n')+rh+'\n'+rr.join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`廚房記帳本_${today}.csv`;a.click();URL.revokeObjectURL(url);toast('CSV 已下載！');}
-function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(!data.groceries||!data.recipes){toast('檔案格式錯誤');return;}const gIds=new Set(groceries.map(x=>x.id));const rIds=new Set(recipes.map(x=>x.id));const iIds=new Set(incomes.map(x=>x.id));const newG=data.groceries.filter(x=>!gIds.has(x.id));const newR=data.recipes.filter(x=>!rIds.has(x.id));const newI=(data.incomes||[]).filter(x=>!iIds.has(x.id));groceries=[...groceries,...newG].sort((a,b)=>b.id-a.id);recipes=[...recipes,...newR].sort((a,b)=>b.id-a.id);incomes=[...incomes,...newI].sort((a,b)=>b.id-a.id);if(data.incomeCategories){incomeCategories=[...new Set([...incomeCategories,...data.incomeCategories])];saveIC();}saveG();saveR();saveI();updateTopSub();renderBackupStats();toast(`匯入完成！+${newG.length}買菜 +${newR.length}料理 +${newI.length}收入`);}catch(err){toast('匯入失敗，請確認檔案是否正確');}input.value='';};reader.readAsText(file);}
-function confirmClear(){document.getElementById('modal-title').textContent='確定清除所有資料？';document.getElementById('modal-msg').textContent=`將刪除 ${groceries.length} 筆買菜、${recipes.length} 道料理、${incomes.length} 筆收入紀錄。此操作無法復原。`;document.getElementById('modal-confirm-btn').onclick=()=>{groceries=[];recipes=[];incomes=[];shopList=[];saveAll();closeModal();updateTopSub();renderBackupStats();toast('所有資料已清除');};document.getElementById('modal-overlay').style.display='flex';}
+function renderBackupStats(){const el=document.getElementById('backup-stats');el.innerHTML=`<b>買菜紀錄：</b>${groceries.length} 筆<br><b>料理紀錄：</b>${recipes.length} 道<br><b>收入紀錄：</b>${incomes.length} 筆<br><b>庫存：</b>${inventory.length} 項<br><b>購物清單：</b>${shopList.length} 項<br><b>儲存位置：</b>Firebase 雲端（即時同步）`;}
+function exportData(){const data={version:4,exportedAt:new Date().toISOString(),groceries,recipes,incomes,incomeCategories,shopList,inventory,customStores};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`廚房記帳本備份_${today}.json`;a.click();URL.revokeObjectURL(url);toast('備份檔已下載！');}
+function exportCSV(){const h='日期,品項,分類,地點,價格,數量,單位,單價,備註';const rows=groceries.map(g=>[g.date,g.name,g.cat,g.store,g.price,g.qty,g.unit,(g.qty?g.price/g.qty:g.price).toFixed(1),g.note||''].map(v=>`"${v}"`).join(','));const ih='\n\n日期,收入分類,金額,備註';const ir=incomes.map(r=>[r.date,r.cat,r.amount,r.note||''].map(v=>`"${v}"`).join(','));const csv='\uFEFF'+h+'\n'+rows.join('\n')+ih+'\n'+ir.join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`廚房記帳本_${today}.csv`;a.click();URL.revokeObjectURL(url);toast('CSV 已下載！');}
+function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(!data.groceries){toast('格式錯誤');return;}const gIds=new Set(groceries.map(x=>x.id));const rIds=new Set(recipes.map(x=>x.id));const iIds=new Set(incomes.map(x=>x.id));const newG=data.groceries.filter(x=>!gIds.has(x.id));const newR=(data.recipes||[]).filter(x=>!rIds.has(x.id));const newI=(data.incomes||[]).filter(x=>!iIds.has(x.id));groceries=[...groceries,...newG].sort((a,b)=>b.id-a.id);recipes=[...recipes,...newR].sort((a,b)=>b.id-a.id);incomes=[...incomes,...newI].sort((a,b)=>b.id-a.id);if(data.incomeCategories)incomeCategories=[...new Set([...incomeCategories,...data.incomeCategories])];if(data.inventory)inventory=[...inventory,...(data.inventory||[]).filter(x=>!inventory.find(i=>i.id===x.id))];if(data.customStores)customStores=[...new Set([...customStores,...data.customStores])];saveAll();updateTopSub();renderBackupStats();toast(`匯入完成！+${newG.length}買菜 +${newR.length}料理 +${newI.length}收入`);}catch(err){toast('匯入失敗');}input.value='';};reader.readAsText(file);}
+function confirmClear(){document.getElementById('modal-title').textContent='確定清除所有資料？';document.getElementById('modal-msg').textContent=`將刪除 ${groceries.length} 筆買菜、${recipes.length} 道料理、${incomes.length} 筆收入、${inventory.length} 項庫存。此操作無法復原。`;document.getElementById('modal-confirm-btn').onclick=()=>{groceries=[];recipes=[];incomes=[];shopList=[];inventory=[];customStores=[];saveAll();closeModal();updateTopSub();renderBackupStats();toast('所有資料已清除');};document.getElementById('modal-overlay').style.display='flex';}
+
+// ── Modal ─────────────────────────────────────────────
 function closeModal(){document.getElementById('modal-overlay').style.display='none';}
 
-
-// Expose functions to global scope for onclick handlers
-window.switchTab=switchTab;
-window.addGrocery=addGrocery;
-window.renderGroceries=renderGroceries;
-window.delGrocery=delGrocery;
-window.addShopItem=addShopItem;
-window.quickAddToList=quickAddToList;
-window.toggleShopItem=toggleShopItem;
-window.removeShopItem=removeShopItem;
-window.clearDoneItems=clearDoneItems;
-window.clearAllItems=clearAllItems;
-window.setRating=setRating;
-window.addIngredient=addIngredient;
-window.addManualIngredient=addManualIngredient;
-window.removeIngredient=removeIngredient;
-window.addStep=addStep;
-window.removeStep=removeStep;
-window.addRecipe=addRecipe;
-window.changeServings=changeServings;
-window.toggleRecipe=toggleRecipe;
-window.delRecipe=delRecipe;
-window.addAvailIngr=addAvailIngr;
-window.removeAvailIngr=removeAvailIngr;
-window.selectIncCat=selectIncCat;
-window.addIncomeCategory=addIncomeCategory;
-window.removeIncCat=removeIncCat;
-window.addIncome=addIncome;
-window.delIncome=delIncome;
-window.renderRecipes=renderRecipes;
-window.renderIncomes=renderIncomes;
-window.exportData=exportData;
-window.exportCSV=exportCSV;
-window.importData=importData;
-window.confirmClear=confirmClear;
-window.closeModal=closeModal;
-window.toast=toast;
+// ── Expose to window ──────────────────────────────────
+const expose=['switchTab','addGrocery','renderGroceries','openEditG','closeEditG','saveEditG','deleteEditG','addShopItem','quickAddToList','toggleShopItem','removeShopItem','clearDoneItems','clearAllItems','addInventory','openEditInv','closeEditInv','saveEditInv','deleteEditInv','setRating','setEditRating','addIngredient','addManualIngredient','removeIngredient','addStep','removeStep','addRecipe','changeServings','toggleRecipe','delRecipe','openEditR','closeEditR','saveEditR','deleteEditR','addAvailIngr','removeAvailIngr','selectIncCat','addIncomeCategory','removeIncCat','addIncome','delIncome','renderIncomes','renderRecipes','renderGroceries','exportData','exportCSV','importData','confirmClear','closeModal','toast','addCustomStore','removeCustomStore'];
+expose.forEach(fn=>{if(typeof eval(fn)==='function')window[fn]=eval(fn);});
 
 // ── Init ─────────────────────────────────────────────
 renderStepsBuilder();
+populateStoreSelects();
 startSync();
 </script>
 </body>
