@@ -118,6 +118,8 @@ body{
 /* ── Sections ── */
 .section{display:none;padding:14px 14px 0;animation:bounceIn .25s ease}
 .section.active{display:block}
+.main-section .section{display:none}
+.main-section .section.active{display:block}
 .main-section{display:none}
 .main-section.active{display:block}
 @keyframes bounceIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -2532,16 +2534,21 @@ initTheme();
 renderStepsBuilder();
 populateStoreSelects();
 populateCatSelects();
-// Init: make sure all main sections except dashboard are hidden
+// Make sure only dashboard is active on start
 ['shop','record','cookbook','stats'].forEach(id=>{
   document.getElementById('main-'+id)?.classList.remove('active');
 });
-// Init: show first sub-tab content of each group (hidden until switched to)
+document.getElementById('main-dashboard')?.classList.add('active');
+document.getElementById('nav-dashboard')?.classList.add('active');
+document.getElementById('tab-dashboard')?.classList.add('active');
+// Init sub-tabs
 Object.entries(SUB_TABS).forEach(([main,subs])=>{
   subs.forEach((sub,i)=>{
     document.getElementById('tab-'+sub)?.classList.toggle('active',i===0);
   });
 });
+// Render empty dashboard placeholder while syncing
+renderDashboard();
 startSync();
 </script>
 </body>
