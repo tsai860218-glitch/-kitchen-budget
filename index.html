@@ -606,6 +606,19 @@ select option{background:var(--bg2);color:var(--text)}
   <button class="nav-item" onclick="switchTab('backup')" id="nav-backup"><span class="nav-icon">☁️</span><span class="nav-label">備份</span></button>
 </nav>
 
+<!-- 庫存扣除確認 Modal -->
+<div id="deduct-modal-overlay" class="modal-overlay" style="display:none">
+  <div class="modal" onclick="event.stopPropagation()" style="max-height:85vh;overflow-y:auto">
+    <h3 style="margin-bottom:6px">要從庫存扣除食材嗎？</h3>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:14px" id="deduct-recipe-label"></p>
+    <div id="deduct-ingr-list" style="margin-bottom:16px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn" onclick="closeDeductModal()">略過</button>
+      <button class="btn-primary" style="margin:0" onclick="confirmDeduct()">確認扣除</button>
+    </div>
+  </div>
+</div>
+
 <!-- Confirm modal -->
 <div id="modal-overlay" class="modal-overlay" style="display:none" onclick="closeModal()">
   <div class="modal" onclick="event.stopPropagation()">
@@ -987,10 +1000,19 @@ function addGrocery(){
   const qty=parseFloat(document.getElementById('g-qty').value)||1;
   if(!name){toast('請輸入品項名稱');return;}
   if(isNaN(price)||price<0){toast('請輸入正確價格');return;}
-  groceries.unshift({id:Date.now(),name,cat:document.getElementById('g-cat').value,price,qty,unit:document.getElementById('g-unit').value,store:document.getElementById('g-store').value,date:document.getElementById('g-date').value,note:document.getElementById('g-note').value.trim()});
-  saveG();
+  const newG={id:Date.now(),name,cat:document.getElementById('g-cat').value,price,qty,unit:document.getElementById('g-unit').value,store:document.getElementById('g-store').value,date:document.getElementById('g-date').value,note:document.getElementById('g-note').value.trim()};
+  groceries.unshift(newG);
+  // 自動入庫存：找同名品項，存在就加量，否則新建
+  const invIdx=inventory.findIndex(i=>i.name===name&&i.unit===newG.unit);
+  if(invIdx>=0){
+    inventory[invIdx].qty=parseFloat((inventory[invIdx].qty+qty).toFixed(2));
+    inventory[invIdx].lastUpdated=today;
+  } else {
+    inventory.push({id:Date.now()+1,name,qty,unit:newG.unit,lowThreshold:0,expiry:'',lastUpdated:today});
+  }
+  saveAll();
   document.getElementById('g-name').value='';document.getElementById('g-price').value='';document.getElementById('g-qty').value='1';document.getElementById('g-note').value='';
-  updateTopSub();toast('已新增：'+name);
+  updateTopSub();toast('已新增：'+name+'，庫存已更新 ✓');
 }
 function updateGroceryStats(){
   const now=new Date();const m=groceries.filter(r=>{const d=new Date(r.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
@@ -1131,7 +1153,7 @@ function renderInventory(){
         </div>
         <div class="inv-bar-wrap"><div class="inv-bar" style="width:${pct}%;background:${isLow?'var(--rust)':'var(--sage)'}"></div></div>
         <div style="display:flex;justify-content:space-between;margin-top:3px">
-          <span style="font-size:11px;color:var(--text2);font-family:var(--mono)">${isLow?'⚠️ 庫存不足':isExpSoon?'⏰ 即將到期':''}</span>
+          <span style="font-size:11px;color:var(--text2);font-family:var(--mono)">${isLow?'⚠️ 庫存不足':isExpSoon?'⏰ 即將到期':i.lastUpdated?'更新 '+i.lastUpdated:''}</span>
           ${i.expiry?`<span style="font-size:11px;color:${isExpSoon?'var(--amber)':'var(--text2)'};font-family:var(--mono)">到期 ${i.expiry}</span>`:''}
         </div>
       </div>
@@ -1204,10 +1226,17 @@ function addRecipe(){
   recipes.unshift({id:Date.now(),name,type:document.getElementById('r-type').value,date:document.getElementById('r-date').value,servings,servingsUnit,time:parseInt(document.getElementById('r-time').value)||0,ingredients:[...tmpIngredients],steps:tmpSteps.filter(s=>s.trim()),totalCost:parseFloat(totalCost.toFixed(0)),costPerUnit:parseFloat((totalCost/servings).toFixed(1)),note:document.getElementById('r-note').value.trim(),rating:tmpRating});
   saveR();
   document.getElementById('r-name').value='';document.getElementById('r-servings').value='2';document.getElementById('r-time').value='';document.getElementById('r-note').value='';
+  const savedIngredients=[...tmpIngredients];
   tmpIngredients=[];tmpSteps=[''];tmpRating=0;
   renderIngrTags();updateCostPreview();renderStepsBuilder();
   document.querySelectorAll('#rate-stars .star').forEach(s=>s.classList.remove('on'));
-  updateTopSub();toast('已儲存：'+name);
+  updateTopSub();
+  // 如果有食材，詢問是否扣庫存
+  if(savedIngredients.length){
+    showDeductModal(name, savedIngredients, servings, servingsUnit);
+  } else {
+    toast('已儲存：'+name);
+  }
 }
 
 let expandedRecipes=new Set(),recipeServings={};
@@ -1508,6 +1537,58 @@ function renderTopFreq(){
   el.innerHTML=rows.map(([name,count],i)=>`<div class="ranking-row"><div class="ranking-num${i<3?' top':''}">${i+1}</div><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between"><span class="ranking-name">${name}</span><span class="ranking-val">${count} 次</span></div><div class="ranking-bar-bg"><div class="ranking-bar-fill" style="width:${Math.round(count/maxVal*100)}%;background:var(--slate)"></div></div></div></div>`).join('');
 }
 
+// ── Inventory Deduct Modal ───────────────────────────
+let _deductIngredients=[];
+
+function showDeductModal(recipeName, ingredients, servings, servingsUnit){
+  _deductIngredients=ingredients;
+  document.getElementById('deduct-recipe-label').textContent=`「${recipeName}」（${servings}${servingsUnit}）`;
+  // 建立每個食材的確認列表，顯示庫存現況
+  const rows=ingredients.map((ingr,i)=>{
+    const inv=inventory.find(x=>x.name===ingr.name&&x.unit===ingr.unit);
+    const hasInv=inv&&inv.qty>0;
+    const afterQty=inv?parseFloat((inv.qty-ingr.qty).toFixed(2)):null;
+    const isEnough=afterQty===null||afterQty>=0;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+      <input type="checkbox" id="deduct-cb-${i}" ${hasInv?'checked':''} ${hasInv?'':'disabled'}
+        style="width:18px;height:18px;accent-color:var(--gold);flex-shrink:0">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:500;color:var(--text)">${ingr.name}</div>
+        <div style="font-size:11px;color:var(--text2);font-family:var(--mono);margin-top:2px">
+          扣除 ${ingr.qty}${ingr.unit}
+          ${inv?`· 庫存 ${inv.qty}${inv.unit} → <span style="color:${isEnough?'var(--sage)':'var(--rust)'}">${afterQty}${inv.unit}</span>`:'<span style="color:var(--text3)">· 庫存無此品項</span>'}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('deduct-ingr-list').innerHTML=rows;
+  document.getElementById('deduct-modal-overlay').style.display='flex';
+}
+
+function closeDeductModal(){
+  document.getElementById('deduct-modal-overlay').style.display='none';
+  _deductIngredients=[];
+  toast('已儲存料理紀錄');
+}
+
+function confirmDeduct(){
+  let deducted=0;
+  _deductIngredients.forEach((ingr,i)=>{
+    const cb=document.getElementById(`deduct-cb-${i}`);
+    if(!cb||!cb.checked)return;
+    const invIdx=inventory.findIndex(x=>x.name===ingr.name&&x.unit===ingr.unit);
+    if(invIdx>=0){
+      inventory[invIdx].qty=Math.max(0,parseFloat((inventory[invIdx].qty-ingr.qty).toFixed(2)));
+      inventory[invIdx].lastUpdated=today;
+      deducted++;
+    }
+  });
+  saveAll();
+  closeDeductModal();
+  updateTopSub();
+  toast(`已儲存料理，扣除 ${deducted} 項庫存 ✓`);
+}
+
 // ── Compare ───────────────────────────────────────────
 function renderCompare(){
   const el=document.getElementById('compare-content');
@@ -1553,7 +1634,7 @@ function initTheme(){
 
 // ── Expose to window ──────────────────────────────────
 const expose=['switchTab','addGrocery','renderGroceries','openEditG','closeEditG','saveEditG','deleteEditG','addShopItem','quickAddToList','toggleShopItem','removeShopItem','clearDoneItems','clearAllItems','addInventory','openEditInv','closeEditInv','saveEditInv','deleteEditInv','setRating','setEditRating','addIngredient','addManualIngredient','removeIngredient','addStep','removeStep','addRecipe','changeServings','toggleRecipe','delRecipe','openEditR','closeEditR','saveEditR','deleteEditR','addAvailIngr','removeAvailIngr','selectIncCat','addIncomeCategory','removeIncCat','addIncome','delIncome','renderIncomes','renderRecipes','renderGroceries','exportData','exportCSV','importData','confirmClear','closeModal','toast','addCustomStore','removeCustomStore'];
-expose.push('toggleTheme','initTheme','addCustomCat','removeCustomCat','openEditCat');
+expose.push('toggleTheme','initTheme','addCustomCat','removeCustomCat','openEditCat','closeDeductModal','confirmDeduct');
 expose.forEach(fn=>{if(typeof eval(fn)==='function')window[fn]=eval(fn);});
 
 // ── Init ─────────────────────────────────────────────
