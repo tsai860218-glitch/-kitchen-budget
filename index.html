@@ -435,6 +435,45 @@ select option{background:var(--bg2);color:var(--text)}
   </div>
 </div>
 
+<!-- ===== 快速記錄 ===== -->
+<div id="tab-quick-meal" class="section">
+  <div class="card" style="margin-top:2px">
+    <div class="card-title">快速記錄一餐</div>
+    <div class="fg">
+      <label>餐點名稱（選填）</label>
+      <input type="text" id="qm-name" placeholder="例：晚餐、泡菜鍋、隨便煮">
+    </div>
+    <div class="row2">
+      <div class="fg"><label>日期</label><input type="date" id="qm-date"></div>
+      <div class="fg"><label>份數</label>
+        <div style="display:flex;gap:6px">
+          <input type="number" id="qm-servings" placeholder="2" min="1" value="2" inputmode="numeric" style="flex:1">
+          <select id="qm-servings-unit" style="flex:1"><option>人份</option><option>顆</option><option>份</option><option>碗</option><option>鍋</option></select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">勾選今天用的食材</div>
+    <div style="font-size:12px;color:var(--text2);font-family:var(--mono);margin-bottom:10px">從庫存和近期買菜中選取，輸入使用量</div>
+    <div id="qm-ingr-list"></div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+      <div style="font-size:11px;color:var(--text2);font-family:var(--mono);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em">手動加入其他食材</div>
+      <div class="row3">
+        <div class="fg" style="margin-bottom:0"><input type="text" id="qm-extra-name" placeholder="食材名"></div>
+        <div class="fg" style="margin-bottom:0"><input type="number" id="qm-extra-cost" placeholder="成本" inputmode="decimal"></div>
+        <button class="btn btn-sm" style="height:42px" onclick="addQmExtra()">加入</button>
+      </div>
+      <div id="qm-extra-tags" class="ingr-added" style="margin-top:8px"></div>
+    </div>
+    <div class="cost-summary" style="margin-top:12px">
+      <span class="label">預估食材成本</span>
+      <span class="val" id="qm-cost-preview">$0</span>
+    </div>
+  </div>
+  <button class="btn-primary" style="margin:0 0 14px" onclick="saveQuickMeal()">記錄這一餐</button>
+</div>
+
 <!-- ===== 新增料理 ===== -->
 <div id="tab-recipe-add" class="section">
   <div class="card" style="margin-top:2px">
@@ -604,6 +643,7 @@ select option{background:var(--bg2);color:var(--text)}
   <button class="nav-item" onclick="switchTab('grocery-list')" id="nav-grocery-list"><span class="nav-icon">📋</span><span class="nav-label">紀錄</span></button>
   <button class="nav-item" onclick="switchTab('shoplist')" id="nav-shoplist"><span class="nav-icon">✅</span><span class="nav-label">清單</span></button>
   <button class="nav-item" onclick="switchTab('inventory')" id="nav-inventory"><span class="nav-icon">📦</span><span class="nav-label">庫存</span></button>
+  <button class="nav-item" onclick="switchTab('quick-meal')" id="nav-quick-meal"><span class="nav-icon">⚡</span><span class="nav-label">快速</span></button>
   <button class="nav-item" onclick="switchTab('recipe-add')" id="nav-recipe-add"><span class="nav-icon">🍳</span><span class="nav-label">料理</span></button>
   <button class="nav-item" onclick="switchTab('recipe-list')" id="nav-recipe-list"><span class="nav-icon">📖</span><span class="nav-label">食譜</span></button>
   <button class="nav-item" onclick="switchTab('recommend')" id="nav-recommend"><span class="nav-icon">💡</span><span class="nav-label">推薦</span></button>
@@ -884,7 +924,7 @@ function removeCustomStore(name){
 }
 
 // ── Tab switch ────────────────────────────────────────
-const ALL_TABS=['dashboard','grocery-add','grocery-list','shoplist','inventory','recipe-add','recipe-list','recommend','income','insights','compare','backup'];
+const ALL_TABS=['dashboard','grocery-add','grocery-list','shoplist','inventory','quick-meal','recipe-add','recipe-list','recommend','income','insights','compare','backup'];
 
 function switchTab(t){
   ALL_TABS.forEach(id=>{
@@ -895,6 +935,7 @@ function switchTab(t){
   if(t==='grocery-list'){renderGroceries();updateGroceryStats();}
   if(t==='shoplist'){renderShopList();renderQuickAdd();}
   if(t==='inventory')renderInventory();
+  if(t==='quick-meal')renderQuickMeal();
   if(t==='recipe-add')refreshIngrSelect();
   if(t==='recipe-list'){renderRecipes();updateRecipeStats();}
   if(t==='recommend')renderRecommend();
@@ -1625,6 +1666,167 @@ function confirmDeduct(){
   toast(`已儲存料理，扣除 ${deducted} 項庫存 ✓`);
 }
 
+// ── Quick Meal ───────────────────────────────────────
+let qmExtras=[];  // manually added items
+
+function renderQuickMeal(){
+  document.getElementById('qm-date').value=today;
+  qmExtras=[];
+  renderQmExtraTags();
+  updateQmCost();
+
+  // Build ingredient list from inventory + recent groceries (last 30 days)
+  const invItems=inventory.map(i=>({name:i.name,unit:i.unit,stock:i.qty,source:'inv',id:i.id}));
+  // Recent groceries not already in inventory
+  const invNames=new Set(inventory.map(i=>i.name+'__'+i.unit));
+  const recentKeys=new Set();
+  const recentItems=[];
+  groceries.forEach(g=>{
+    const key=g.name+'__'+g.unit;
+    if(!invNames.has(key)&&!recentKeys.has(key)){
+      recentKeys.add(key);
+      recentItems.push({name:g.name,unit:g.unit,stock:null,source:'grocery'});
+    }
+  });
+  const allItems=[...invItems,...recentItems];
+
+  if(!allItems.length){
+    document.getElementById('qm-ingr-list').innerHTML='<div style="color:var(--text2);font-size:13px;font-family:var(--mono)">先新增庫存或買菜紀錄，食材就會出現在這裡</div>';
+    return;
+  }
+
+  document.getElementById('qm-ingr-list').innerHTML=allItems.map((item,i)=>`
+    <div class="qm-row" id="qm-row-${i}" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+      <input type="checkbox" id="qm-cb-${i}" onchange="toggleQmRow(${i})"
+        style="width:20px;height:20px;accent-color:var(--gold);flex-shrink:0;cursor:pointer">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:500;color:var(--text)">${item.name}</div>
+        ${item.stock!==null
+          ?`<div style="font-size:11px;color:var(--text2);font-family:var(--mono)">庫存 ${item.stock}${item.unit}</div>`
+          :`<div style="font-size:11px;color:var(--text3);font-family:var(--mono)">近期買菜</div>`}
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;opacity:.3;transition:opacity .15s" id="qm-qty-wrap-${i}">
+        <input type="number" id="qm-qty-${i}" placeholder="用量" min="0" step="0.1" inputmode="decimal"
+          style="width:72px;font-size:14px;padding:7px 10px" oninput="updateQmCost()">
+        <span style="font-size:13px;color:var(--text2);font-family:var(--mono);flex-shrink:0">${item.unit}</span>
+      </div>
+    </div>`).join('');
+
+  // store allItems globally for saveQuickMeal
+  window._qmAllItems=allItems;
+}
+
+function toggleQmRow(i){
+  const cb=document.getElementById(`qm-cb-${i}`);
+  const wrap=document.getElementById(`qm-qty-wrap-${i}`);
+  const qtyInput=document.getElementById(`qm-qty-${i}`);
+  if(cb.checked){
+    wrap.style.opacity='1';
+    qtyInput.focus();
+  } else {
+    wrap.style.opacity='.3';
+    qtyInput.value='';
+    updateQmCost();
+  }
+}
+
+function addQmExtra(){
+  const name=document.getElementById('qm-extra-name').value.trim();
+  const cost=parseFloat(document.getElementById('qm-extra-cost').value)||0;
+  if(!name){toast('請輸入食材名稱');return;}
+  qmExtras.push({name,cost});
+  document.getElementById('qm-extra-name').value='';
+  document.getElementById('qm-extra-cost').value='';
+  renderQmExtraTags();
+  updateQmCost();
+}
+
+function removeQmExtra(i){
+  qmExtras.splice(i,1);
+  renderQmExtraTags();
+  updateQmCost();
+}
+
+function renderQmExtraTags(){
+  document.getElementById('qm-extra-tags').innerHTML=qmExtras.map((x,i)=>
+    `<span class="ingr-tag">${x.name} $${x.cost}<button onclick="removeQmExtra(${i})">×</button></span>`
+  ).join('');
+}
+
+function updateQmCost(){
+  const allItems=window._qmAllItems||[];
+  // cost from checked items: use unit price from groceries
+  let total=0;
+  allItems.forEach((item,i)=>{
+    const cb=document.getElementById(`qm-cb-${i}`);
+    const qty=parseFloat(document.getElementById(`qm-qty-${i}`)?.value)||0;
+    if(!cb?.checked||!qty)return;
+    // find latest unit price from groceries
+    const match=groceries.find(g=>g.name===item.name&&g.unit===item.unit);
+    const unitPrice=match?(match.price/match.qty):0;
+    total+=unitPrice*qty;
+  });
+  total+=qmExtras.reduce((a,x)=>a+x.cost,0);
+  document.getElementById('qm-cost-preview').textContent='$'+total.toFixed(0);
+}
+
+function saveQuickMeal(){
+  const allItems=window._qmAllItems||[];
+  const name=document.getElementById('qm-name').value.trim()||'一餐';
+  const servings=parseFloat(document.getElementById('qm-servings').value)||2;
+  const servingsUnit=document.getElementById('qm-servings-unit').value;
+  const date=document.getElementById('qm-date').value||today;
+
+  // Collect checked ingredients
+  const ingredients=[];
+  const deductList=[];
+  allItems.forEach((item,i)=>{
+    const cb=document.getElementById(`qm-cb-${i}`);
+    const qty=parseFloat(document.getElementById(`qm-qty-${i}`)?.value)||0;
+    if(!cb?.checked||!qty)return;
+    const match=groceries.find(g=>g.name===item.name&&g.unit===item.unit);
+    const unitPrice=match?(match.price/match.qty):0;
+    const cost=parseFloat((unitPrice*qty).toFixed(1));
+    ingredients.push({name:item.name,qty,unit:item.unit,cost,groceryId:match?.id||null});
+    if(item.source==='inv')deductList.push({name:item.name,unit:item.unit,qty});
+  });
+  // Add extras
+  qmExtras.forEach(x=>ingredients.push({name:x.name,qty:1,unit:'',cost:x.cost,groceryId:null}));
+
+  if(!ingredients.length){toast('請至少勾選一項食材');return;}
+
+  const totalCost=ingredients.reduce((a,x)=>a+x.cost,0);
+  recipes.unshift({
+    id:Date.now(),name,type:'🥘',date,servings,servingsUnit,
+    time:0,ingredients,steps:[],
+    totalCost:parseFloat(totalCost.toFixed(0)),
+    costPerUnit:parseFloat((totalCost/servings).toFixed(1)),
+    note:'快速記錄',rating:0
+  });
+  saveR();
+
+  // Deduct inventory
+  let deducted=0;
+  deductList.forEach(d=>{
+    const idx=inventory.findIndex(i=>i.name===d.name&&i.unit===d.unit);
+    if(idx>=0){
+      inventory[idx].qty=Math.max(0,parseFloat((inventory[idx].qty-d.qty).toFixed(2)));
+      inventory[idx].lastUpdated=date;
+      deducted++;
+    }
+  });
+  if(deducted)saveAll();
+
+  // Reset form
+  document.getElementById('qm-name').value='';
+  document.getElementById('qm-servings').value='2';
+  qmExtras=[];
+  renderQmExtraTags();
+  renderQuickMeal();
+  updateTopSub();
+  toast(`已記錄「${name}」，扣除 ${deducted} 項庫存 ✓`);
+}
+
 // ── Compare ───────────────────────────────────────────
 function renderCompare(){
   const el=document.getElementById('compare-content');
@@ -1669,9 +1871,27 @@ function initTheme(){
 }
 
 // ── Expose to window ──────────────────────────────────
-const expose=['switchTab','addGrocery','renderGroceries','openEditG','closeEditG','saveEditG','deleteEditG','addShopItem','quickAddToList','toggleShopItem','removeShopItem','clearDoneItems','clearAllItems','addInventory','openEditInv','closeEditInv','saveEditInv','deleteEditInv','setRating','setEditRating','addIngredient','addManualIngredient','removeIngredient','addStep','removeStep','addRecipe','changeServings','toggleRecipe','delRecipe','openEditR','closeEditR','saveEditR','deleteEditR','addAvailIngr','removeAvailIngr','selectIncCat','addIncomeCategory','removeIncCat','addIncome','delIncome','renderIncomes','renderRecipes','renderGroceries','exportData','exportCSV','importData','confirmClear','closeModal','toast','addCustomStore','removeCustomStore'];
-expose.push('toggleTheme','initTheme','addCustomCat','removeCustomCat','openEditCat','closeDeductModal','confirmDeduct','importFromGroceries');
-expose.forEach(fn=>{if(typeof eval(fn)==='function')window[fn]=eval(fn);});
+// Functions exposed to window below
+// Expose all functions to window (eval doesn't work in modules)
+const fnMap={
+  switchTab,addGrocery,renderGroceries,openEditG,closeEditG,saveEditG,deleteEditG,
+  addShopItem,quickAddToList,toggleShopItem,removeShopItem,clearDoneItems,clearAllItems,
+  addInventory,openEditInv,closeEditInv,saveEditInv,deleteEditInv,
+  setRating,setEditRating,addIngredient,addManualIngredient,removeIngredient,addStep,removeStep,
+  addRecipe,changeServings,toggleRecipe,delRecipe,
+  openEditR,closeEditR,saveEditR,deleteEditR,
+  addAvailIngr,removeAvailIngr,
+  selectIncCat,addIncomeCategory,removeIncCat,addIncome,delIncome,
+  renderIncomes,renderRecipes,
+  exportData,exportCSV,importData,confirmClear,closeModal,toast,
+  toggleTheme,initTheme,
+  addCustomCat,removeCustomCat,openEditCat,
+  closeDeductModal,confirmDeduct,
+  importFromGroceries,
+  toggleQmRow,addQmExtra,removeQmExtra,saveQuickMeal,
+  addCustomStore,removeCustomStore,populateCatSelects
+};
+Object.entries(fnMap).forEach(([k,v])=>window[k]=v);
 
 // ── Init ─────────────────────────────────────────────
 initTheme();
