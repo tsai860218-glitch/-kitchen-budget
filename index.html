@@ -301,6 +301,20 @@ select option{background:var(--bg2);color:var(--text)}
 .store-default{background:rgba(255,255,255,.08);color:#8b949e}
 
 ::-webkit-scrollbar{width:0;height:0}
+/* 5-tab nav */
+.bottom-nav{justify-content:space-around}
+.nav-item{flex:1;max-width:80px}
+.nav-center .nav-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--gold),rgba(200,140,40,.8));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 16px var(--gold-dim);margin-bottom:2px}
+.nav-center{color:var(--text2)}
+.nav-center.active{color:var(--gold)}
+/* Sub tabs */
+.sub-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:61px;z-index:98;overflow-x:auto}
+.sub-tabs::-webkit-scrollbar{display:none}
+.sub-tab{flex:1;padding:10px 8px;text-align:center;font-size:12px;font-weight:500;color:var(--text2);border:none;background:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-family:var(--mono);letter-spacing:.02em;min-width:60px}
+.sub-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+/* Main sections now full height */
+.main-section{display:none}
+.main-section.active{display:block}
 </style>
 </head>
 <body>
@@ -313,11 +327,23 @@ select option{background:var(--bg2);color:var(--text)}
   <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">🌙 深色</button>
 </div>
 
+<!-- DASHBOARD -->
+<div id="main-dashboard" class="main-section active">
 <!-- ===== 儀表板 ===== -->
 <div id="tab-dashboard" class="section active">
   <div id="dash-content" style="margin-top:2px"></div>
 </div>
 
+</div>
+
+<!-- SHOP GROUP -->
+<div id="main-shop" class="main-section">
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchSub('shop','grocery-add')">＋ 新增</button>
+    <button class="sub-tab" onclick="switchSub('shop','grocery-list')">紀錄</button>
+    <button class="sub-tab" onclick="switchSub('shop','shoplist')">清單</button>
+    <button class="sub-tab" onclick="switchSub('shop','inventory')">庫存</button>
+  </div>
 <!-- ===== 新增買菜 ===== -->
 <div id="tab-grocery-add" class="section">
   <div class="card" style="margin-top:2px">
@@ -435,6 +461,14 @@ select option{background:var(--bg2);color:var(--text)}
   </div>
 </div>
 
+</div>
+
+<!-- RECORD GROUP -->
+<div id="main-record" class="main-section">
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchSub('record','quick-meal')">⚡ 快速</button>
+    <button class="sub-tab" onclick="switchSub('record','recipe-add')">🍳 完整料理</button>
+  </div>
 <!-- ===== 快速記錄 ===== -->
 <div id="tab-quick-meal" class="section">
   <div class="card" style="margin-top:2px">
@@ -523,6 +557,15 @@ select option{background:var(--bg2);color:var(--text)}
   </div>
 </div>
 
+</div>
+
+<!-- COOKBOOK GROUP -->
+<div id="main-cookbook" class="main-section">
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchSub('cookbook','recipe-list')">料理紀錄</button>
+    <button class="sub-tab" onclick="switchSub('cookbook','saved-recipes')">收藏食譜</button>
+    <button class="sub-tab" onclick="switchSub('cookbook','recommend')">食材推薦</button>
+  </div>
 <!-- ===== 料理紀錄 ===== -->
 <div id="tab-recipe-list" class="section">
   <div class="stats-grid">
@@ -547,6 +590,35 @@ select option{background:var(--bg2);color:var(--text)}
   <div id="recipe-list" class="list"></div>
 </div>
 
+<!-- ===== 收藏食譜 ===== -->
+<div id="tab-saved-recipes" class="section">
+  <div class="card" style="margin-top:2px">
+    <div class="card-title">新增收藏食譜</div>
+    <div class="fg"><label>食譜名稱</label><input type="text" id="sv-name" placeholder="例：奶油蘑菇義大利麵、泰式打拋豬"></div>
+    <div class="row2">
+      <div class="fg"><label>料理類型</label>
+        <select id="sv-type"><option value="🥗">🥗 蔬食</option><option value="🍳">🍳 蛋料理</option><option value="🥩">🥩 肉類</option><option value="🐟">🐟 海鮮</option><option value="🍜">🍜 麵飯</option><option value="🍲">🍲 湯品</option><option value="🥘">🥘 其他</option></select>
+      </div>
+      <div class="fg"><label>難度</label>
+        <select id="sv-level"><option value="⭐">⭐ 簡單</option><option value="⭐⭐">⭐⭐ 普通</option><option value="⭐⭐⭐">⭐⭐⭐ 費工</option></select>
+      </div>
+    </div>
+    <div class="fg"><label>來源 / 備註</label><input type="text" id="sv-source" placeholder="例：IG @xxx、YouTube、媽媽教的"></div>
+    <div class="fg"><label>食材清單</label><textarea id="sv-ingredients" rows="3" placeholder="一行一個，例：&#10;豬絞肉 200g&#10;九層塔&#10;辣椒 2根"></textarea></div>
+    <div class="fg"><label>做法步驟</label><textarea id="sv-steps" rows="5" placeholder="一步一行，例：&#10;1. 熱鍋下油&#10;2. 爆香蒜頭辣椒&#10;3. 下豬肉炒熟"></textarea></div>
+    <div class="fg"><label>標籤（用空格分隔）</label><input type="text" id="sv-tags" placeholder="例：快速 下飯 小孩喜歡"></div>
+    <button class="btn-primary" onclick="saveSavedRecipe()">儲存收藏</button>
+  </div>
+  <div class="card">
+    <div class="card-title">我的收藏</div>
+    <div class="filter-row">
+      <select class="fsel" id="sv-fl-type" onchange="renderSavedRecipes()"><option value="">所有類型</option><option value="🥗">🥗 蔬食</option><option value="🍳">🍳 蛋料理</option><option value="🥩">🥩 肉類</option><option value="🐟">🐟 海鮮</option><option value="🍜">🍜 麵飯</option><option value="🍲">🍲 湯品</option><option value="🥘">🥘 其他</option></select>
+      <input type="text" class="fsel" id="sv-fl-search" placeholder="🔍 搜尋…" oninput="renderSavedRecipes()" style="border-radius:99px;width:100px">
+    </div>
+    <div id="saved-recipes-list"></div>
+  </div>
+</div>
+
 <!-- ===== 食材推薦 ===== -->
 <div id="tab-recommend" class="section">
   <div class="card" style="margin-top:2px">
@@ -560,6 +632,16 @@ select option{background:var(--bg2);color:var(--text)}
   <div class="card"><div class="card-title">可以做的料理</div><div id="rec-results"></div></div>
 </div>
 
+</div>
+
+<!-- STATS GROUP -->
+<div id="main-stats" class="main-section">
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchSub('stats','insights')">洞察</button>
+    <button class="sub-tab" onclick="switchSub('stats','income')">收入</button>
+    <button class="sub-tab" onclick="switchSub('stats','compare')">比價</button>
+    <button class="sub-tab" onclick="switchSub('stats','backup')">備份</button>
+  </div>
 <!-- ===== 收入 ===== -->
 <div id="tab-income" class="section">
   <div class="income-hero">
@@ -607,7 +689,29 @@ select option{background:var(--bg2);color:var(--text)}
 </div>
 
 <!-- ===== 比價 ===== -->
-<div id="tab-compare" class="section"><div id="compare-content"></div></div>
+<div id="tab-compare" class="section">
+  <div class="card" style="margin-top:2px">
+    <div class="card-title">比價群組管理</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:10px">把不同名稱但同類的商品歸在一起比較，例如「楓康雞蛋」和「紅仁雞蛋」都是雞蛋。</div>
+    <div class="fg">
+      <label>群組名稱</label>
+      <input type="text" id="pg-name" placeholder="例：雞蛋、高麗菜">
+    </div>
+    <div class="fg">
+      <label>加入品項（從買菜紀錄選）</label>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <select id="pg-item-select" style="flex:1"><option value="">選擇品項…</option></select>
+        <button class="btn btn-sm btn-gold" onclick="addItemToPgDraft()">加入</button>
+      </div>
+      <div id="pg-draft-tags" class="ingr-added"></div>
+    </div>
+    <button class="btn-primary" onclick="savePriceGroup()" style="margin-top:4px">新增比價群組</button>
+  </div>
+  <div class="card">
+    <div class="card-title">比價結果</div>
+    <div id="compare-content"></div>
+  </div>
+</div>
 
 <!-- ===== 備份 ===== -->
 <div id="tab-backup" class="section">
@@ -636,21 +740,15 @@ select option{background:var(--bg2);color:var(--text)}
   </div>
 </div>
 
+</div>
+
 <!-- ===== Bottom nav ===== -->
 <nav class="bottom-nav">
   <button class="nav-item active" onclick="switchTab('dashboard')" id="nav-dashboard"><span class="nav-icon">🏠</span><span class="nav-label">首頁</span></button>
-  <button class="nav-item" onclick="switchTab('grocery-add')" id="nav-grocery-add"><span class="nav-icon">🛒</span><span class="nav-label">買菜</span></button>
-  <button class="nav-item" onclick="switchTab('grocery-list')" id="nav-grocery-list"><span class="nav-icon">📋</span><span class="nav-label">紀錄</span></button>
-  <button class="nav-item" onclick="switchTab('shoplist')" id="nav-shoplist"><span class="nav-icon">✅</span><span class="nav-label">清單</span></button>
-  <button class="nav-item" onclick="switchTab('inventory')" id="nav-inventory"><span class="nav-icon">📦</span><span class="nav-label">庫存</span></button>
-  <button class="nav-item" onclick="switchTab('quick-meal')" id="nav-quick-meal"><span class="nav-icon">⚡</span><span class="nav-label">快速</span></button>
-  <button class="nav-item" onclick="switchTab('recipe-add')" id="nav-recipe-add"><span class="nav-icon">🍳</span><span class="nav-label">料理</span></button>
-  <button class="nav-item" onclick="switchTab('recipe-list')" id="nav-recipe-list"><span class="nav-icon">📖</span><span class="nav-label">食譜</span></button>
-  <button class="nav-item" onclick="switchTab('recommend')" id="nav-recommend"><span class="nav-icon">💡</span><span class="nav-label">推薦</span></button>
-  <button class="nav-item" onclick="switchTab('income')" id="nav-income"><span class="nav-icon">💰</span><span class="nav-label">收入</span></button>
-  <button class="nav-item" onclick="switchTab('insights')" id="nav-insights"><span class="nav-icon">📊</span><span class="nav-label">洞察</span></button>
-  <button class="nav-item" onclick="switchTab('compare')" id="nav-compare"><span class="nav-icon">⚖️</span><span class="nav-label">比價</span></button>
-  <button class="nav-item" onclick="switchTab('backup')" id="nav-backup"><span class="nav-icon">☁️</span><span class="nav-label">備份</span></button>
+  <button class="nav-item" onclick="switchTab('shop')" id="nav-shop"><span class="nav-icon">🛒</span><span class="nav-label">買菜</span></button>
+  <button class="nav-item nav-center" onclick="switchTab('record')" id="nav-record"><span class="nav-icon">✏️</span><span class="nav-label">記錄</span></button>
+  <button class="nav-item" onclick="switchTab('cookbook')" id="nav-cookbook"><span class="nav-icon">📖</span><span class="nav-label">食譜</span></button>
+  <button class="nav-item" onclick="switchTab('stats')" id="nav-stats"><span class="nav-icon">📊</span><span class="nav-label">統計</span></button>
 </nav>
 
 <!-- 庫存扣除確認 Modal -->
@@ -720,6 +818,11 @@ select option{background:var(--bg2);color:var(--text)}
         <span class="star" onclick="setEditRating(5)">★</span>
       </div>
     </div>
+    <div class="fg">
+      <label>烹飪步驟</label>
+      <div id="er-steps-builder" style="margin-bottom:8px"></div>
+      <button class="btn-add-step" onclick="addEditRStep()">＋ 新增步驟</button>
+    </div>
     <div class="fg"><label>備註</label><textarea id="er-note" rows="2"></textarea></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
       <button class="btn btn-danger" onclick="deleteEditR()">刪除</button>
@@ -767,7 +870,7 @@ const db = getFirestore(fbApp);
 const DATA_DOC = doc(db, 'family', 'shared');
 
 // ── Data ─────────────────────────────────────────────
-let groceries=[],recipes=[],incomes=[],incomeCategories=["薪資","固定收入","額外收入","租金","投資"],shopList=[],inventory=[],customStores=[],customCats=[];
+let groceries=[],recipes=[],incomes=[],incomeCategories=["薪資","固定收入","額外收入","租金","投資"],shopList=[],inventory=[],customStores=[],customCats=[],priceGroups=[],savedRecipes=[];
 let tmpIngredients=[],tmpSteps=[''],tmpRating=0,selectedIncCat='';
 let availIngredients=[];
 let _saveTimer=null,_editGId=null,_editRId=null,_editInvId=null,_editRRating=0;
@@ -782,7 +885,7 @@ function allStores(){return [...DEFAULT_STORES,...customStores];}
 function saveAll(){
   clearTimeout(_saveTimer);
   _saveTimer=setTimeout(async()=>{
-    try{await setDoc(DATA_DOC,{groceries,recipes,incomes,incomeCategories,shopList,inventory,customStores,customCats,updatedAt:Date.now()});}
+    try{await setDoc(DATA_DOC,{groceries,recipes,incomes,incomeCategories,shopList,inventory,customStores,customCats,priceGroups,savedRecipes,updatedAt:Date.now()});}
     catch(e){toast('⚠️ 儲存失敗');}
   },600);
 }
@@ -796,7 +899,7 @@ function startSync(){
       groceries=d.groceries||[];recipes=d.recipes||[];incomes=d.incomes||[];
       incomeCategories=d.incomeCategories||["薪資","固定收入","額外收入","租金","投資"];
       shopList=d.shopList||[];inventory=d.inventory||[];customStores=d.customStores||[];
-      customCats=d.customCats||(d.customCats===null?[]:null)||[];
+      customCats=d.customCats||(d.customCats===null?[]:null)||[];priceGroups=d.priceGroups||[];savedRecipes=d.savedRecipes||[];
       // First time: seed customCats from factory so user can edit them
       if(!customCats.length&&!d.hasOwnProperty('customCats')){
         customCats=[...FACTORY_CATS];
@@ -924,26 +1027,59 @@ function removeCustomStore(name){
 }
 
 // ── Tab switch ────────────────────────────────────────
-const ALL_TABS=['dashboard','grocery-add','grocery-list','shoplist','inventory','quick-meal','recipe-add','recipe-list','recommend','income','insights','compare','backup'];
+const ALL_TABS=['dashboard','shop','record','cookbook','stats'];
+const SUB_TABS={'shop':['grocery-add','grocery-list','shoplist','inventory'],'record':['quick-meal','recipe-add'],'cookbook':['recipe-list','saved-recipes','recommend'],'stats':['insights','income','compare','backup']};
+
+// Track active sub-tab per main tab
+const activeSubTab={shop:'grocery-add',record:'quick-meal',cookbook:'recipe-list',stats:'insights'};
 
 function switchTab(t){
-  ALL_TABS.forEach(id=>{
-    document.getElementById('tab-'+id)?.classList.toggle('active',id===t);
+  // Main tabs
+  ['dashboard','shop','record','cookbook','stats'].forEach(id=>{
+    document.getElementById('main-'+id)?.classList.toggle('active',id===t);
     document.getElementById('nav-'+id)?.classList.toggle('active',id===t);
   });
+  // Show correct sub-tab for this main tab
   if(t==='dashboard')renderDashboard();
-  if(t==='grocery-list'){renderGroceries();updateGroceryStats();}
-  if(t==='shoplist'){renderShopList();renderQuickAdd();}
-  if(t==='inventory')renderInventory();
-  if(t==='quick-meal')renderQuickMeal();
-  if(t==='recipe-add')refreshIngrSelect();
-  if(t==='recipe-list'){renderRecipes();updateRecipeStats();}
-  if(t==='recommend')renderRecommend();
-  if(t==='income'){renderIncomeCatTags();renderIncomes();updateIncomeStats();renderIncomeBreakdown();}
-  if(t==='insights')renderInsights();
-  if(t==='compare')renderCompare();
-  if(t==='backup')renderBackupStats();
+  else{
+    const sub=activeSubTab[t];
+    if(sub)activateSub(t,sub);
+  }
   updateTopSub();
+}
+
+function switchSub(main,sub){
+  activeSubTab[main]=sub;
+  activateSub(main,sub);
+}
+
+function activateSub(main,sub){
+  // Hide all sub-sections under this main tab
+  const subs=SUB_TABS[main]||[];
+  subs.forEach(id=>{
+    document.getElementById('tab-'+id)?.classList.remove('active');
+  });
+  // Show target
+  document.getElementById('tab-'+sub)?.classList.add('active');
+  // Update sub-tab buttons
+  const mainEl=document.getElementById('main-'+main);
+  mainEl?.querySelectorAll('.sub-tab').forEach(btn=>{
+    btn.classList.toggle('active', btn.getAttribute('onclick')?.includes("'"+sub+"'"));
+  });
+  // Fire render
+  if(sub==='dashboard')renderDashboard();
+  if(sub==='grocery-list'){renderGroceries();updateGroceryStats();}
+  if(sub==='shoplist'){renderShopList();renderQuickAdd();}
+  if(sub==='inventory')renderInventory();
+  if(sub==='quick-meal')renderQuickMeal();
+  if(sub==='recipe-add')refreshIngrSelect();
+  if(sub==='recipe-list'){renderRecipes();updateRecipeStats();}
+  if(sub==='saved-recipes')renderSavedRecipes();
+  if(sub==='recommend')renderRecommend();
+  if(sub==='income'){renderIncomeCatTags();renderIncomes();updateIncomeStats();renderIncomeBreakdown();}
+  if(sub==='insights')renderInsights();
+  if(sub==='compare')renderCompare();
+  if(sub==='backup')renderBackupStats();
 }
 
 function updateTopSub(){
@@ -1287,7 +1423,14 @@ function addManualIngredient(){
 function removeIngredient(i){tmpIngredients.splice(i,1);renderIngrTags();updateCostPreview();}
 function renderIngrTags(){document.getElementById('ingr-added-list').innerHTML=tmpIngredients.map((x,i)=>`<span class="ingr-tag">${x.name} ${x.qty}${x.unit} $${x.cost}<button onclick="removeIngredient(${i})">×</button></span>`).join('');}
 function updateCostPreview(){document.getElementById('cost-preview').textContent='$'+tmpIngredients.reduce((a,x)=>a+x.cost,0).toFixed(0);}
-function renderStepsBuilder(){document.getElementById('steps-builder').innerHTML=tmpSteps.map((s,i)=>`<div class="step-input-row"><div class="step-input-num">${i+1}</div><textarea rows="2" placeholder="步驟描述…" oninput="tmpSteps[${i}]=this.value">${s}</textarea>${tmpSteps.length>1?`<button onclick="removeStep(${i})">×</button>`:''}</div>`).join('');}
+function renderStepsBuilder(){
+  document.getElementById('steps-builder').innerHTML=tmpSteps.map((s,i)=>`
+    <div class="step-input-row">
+      <div class="step-input-num">${i+1}</div>
+      <textarea rows="2" placeholder="步驟描述…" oninput="tmpSteps[${i}]=this.value">${s}</textarea>
+      ${tmpSteps.length>1?`<button onclick="removeStep(${i})">×</button>`:''}
+    </div>`).join('');
+}
 function addStep(){tmpSteps.push('');renderStepsBuilder();}
 function removeStep(i){tmpSteps.splice(i,1);renderStepsBuilder();}
 
@@ -1387,9 +1530,25 @@ function toggleRecipe(id){if(expandedRecipes.has(id))expandedRecipes.delete(id);
 function delRecipe(id){if(!confirm('確定刪除？'))return;recipes=recipes.filter(r=>r.id!==id);expandedRecipes.delete(id);delete recipeServings[id];saveR();renderRecipes();updateRecipeStats();updateTopSub();}
 
 // ── Edit Recipe ───────────────────────────────────────
+let _editRSteps=[];
+
+function renderEditRSteps(){
+  const el=document.getElementById('er-steps-builder');if(!el)return;
+  el.innerHTML=_editRSteps.map((s,i)=>`
+    <div class="step-input-row">
+      <div class="step-input-num">${i+1}</div>
+      <textarea rows="2" placeholder="步驟描述…" oninput="_editRSteps[${i}]=this.value">${s}</textarea>
+      ${_editRSteps.length>1?`<button onclick="removeEditRStep(${i})">×</button>`:''}
+    </div>`).join('');
+}
+
+function addEditRStep(){_editRSteps.push('');renderEditRSteps();}
+function removeEditRStep(i){_editRSteps.splice(i,1);renderEditRSteps();}
+
 function openEditR(id){
   const r=recipes.find(x=>x.id===id);if(!r)return;
   _editRId=id;_editRRating=r.rating||0;
+  _editRSteps=r.steps&&r.steps.length?[...r.steps]:[''];
   document.getElementById('er-name').value=r.name;
   document.getElementById('er-type').value=r.type;
   document.getElementById('er-date').value=r.date;
@@ -1399,6 +1558,8 @@ function openEditR(id){
   document.getElementById('er-note').value=r.note||'';
   document.querySelectorAll('#er-stars .star').forEach((s,i)=>s.classList.toggle('on',i<_editRRating));
   document.getElementById('edit-r-overlay').style.display='flex';
+  // render steps after modal shown
+  setTimeout(()=>renderEditRSteps(),50);
 }
 function closeEditR(){document.getElementById('edit-r-overlay').style.display='none';_editRId=null;}
 function saveEditR(){
@@ -1406,7 +1567,8 @@ function saveEditR(){
   const name=document.getElementById('er-name').value.trim();if(!name){toast('請輸入料理名稱');return;}
   const servings=parseFloat(document.getElementById('er-servings').value)||2;
   const totalCost=recipes[idx].totalCost;
-  recipes[idx]={...recipes[idx],name,type:document.getElementById('er-type').value,date:document.getElementById('er-date').value,servings,servingsUnit:document.getElementById('er-servings-unit').value,time:parseInt(document.getElementById('er-time').value)||0,note:document.getElementById('er-note').value.trim(),rating:_editRRating,costPerUnit:parseFloat((totalCost/servings).toFixed(1))};
+  const steps=_editRSteps.filter(s=>s.trim());
+  recipes[idx]={...recipes[idx],name,type:document.getElementById('er-type').value,date:document.getElementById('er-date').value,servings,servingsUnit:document.getElementById('er-servings-unit').value,time:parseInt(document.getElementById('er-time').value)||0,note:document.getElementById('er-note').value.trim(),rating:_editRRating,steps,costPerUnit:parseFloat((totalCost/servings).toFixed(1))};
   saveR();closeEditR();renderRecipes();updateRecipeStats();toast('已更新：'+name);
 }
 function deleteEditR(){
@@ -1827,30 +1989,252 @@ function saveQuickMeal(){
   toast(`已記錄「${name}」，扣除 ${deducted} 項庫存 ✓`);
 }
 
-// ── Compare ───────────────────────────────────────────
+// ── Price Groups ─────────────────────────────────────
+let pgDraftItems=[];
+
+function refreshPgSelect(){
+  const names=[...new Set(groceries.map(g=>g.name))].sort();
+  const sel=document.getElementById('pg-item-select');
+  if(!sel)return;
+  sel.innerHTML='<option value="">選擇品項…</option>'+names.map(n=>`<option value="${n}">${n}</option>`).join('');
+}
+
+function addItemToPgDraft(){
+  const sel=document.getElementById('pg-item-select');
+  const name=sel?.value;
+  if(!name){toast('請選擇品項');return;}
+  if(pgDraftItems.includes(name)){toast('已加入');return;}
+  pgDraftItems.push(name);
+  sel.value='';
+  renderPgDraftTags();
+}
+
+function removeFromPgDraft(name){
+  pgDraftItems=pgDraftItems.filter(x=>x!==name);
+  renderPgDraftTags();
+}
+
+function renderPgDraftTags(){
+  const el=document.getElementById('pg-draft-tags');if(!el)return;
+  el.innerHTML=pgDraftItems.map(name=>`<span class="ingr-tag">${name}<button onclick="removeFromPgDraft('${name}')">×</button></span>`).join('');
+}
+
+function savePriceGroup(){
+  const name=document.getElementById('pg-name')?.value.trim();
+  if(!name){toast('請輸入群組名稱');return;}
+  if(pgDraftItems.length<2){toast('請至少加入兩個品項');return;}
+  // Check duplicate group name
+  const existing=priceGroups.findIndex(g=>g.name===name);
+  if(existing>=0){
+    priceGroups[existing].items=[...new Set([...priceGroups[existing].items,...pgDraftItems])];
+  } else {
+    priceGroups.push({id:Date.now(),name,items:[...pgDraftItems]});
+  }
+  saveAll();
+  document.getElementById('pg-name').value='';
+  pgDraftItems=[];
+  renderPgDraftTags();
+  renderCompare();
+  toast('已儲存群組：'+name);
+}
+
+function deletePriceGroup(id){
+  if(!confirm('確定刪除此比價群組？'))return;
+  priceGroups=priceGroups.filter(g=>g.id!==id);
+  saveAll();renderCompare();
+}
+
+// ── Compare ─────────────────────────────────────────
 function renderCompare(){
+  refreshPgSelect();
   const el=document.getElementById('compare-content');
-  if(!groceries.length){el.innerHTML='<div class="empty" style="margin-top:14px"><span class="empty-icon">⚖️</span><span class="empty-text">尚無買菜紀錄</span></div>';return;}
-  const byName={};groceries.forEach(r=>{if(!byName[r.name])byName[r.name]=[];byName[r.name].push(r);});
-  const multi=Object.entries(byName).filter(([,v])=>[...new Set(v.map(r=>r.store))].length>=2);
-  const rest=Object.entries(byName).filter(([n])=>!multi.find(([m])=>m===n));
+  if(!groceries.length){el.innerHTML='<div class="empty"><span class="empty-icon">⚖️</span><span class="empty-text">尚無買菜紀錄</span></div>';return;}
+
   let html='';
-  if(multi.length){html+='<div style="font-size:10px;font-weight:600;color:var(--text2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin:2px 0 10px">可比價品項</div><div class="card" style="margin-top:0">'+multi.map(([n,items],idx)=>(idx>0?'<div class="divider"></div>':'')+buildCG(n,items,true)).join('')+'</div>';}
-  if(rest.length){html+=`<div style="font-size:10px;font-weight:600;color:var(--text2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin:${multi.length?12:2}px 0 10px">其他品項</div><div class="card" style="margin-top:0">`;if(!multi.length)html+='<div style="font-size:12px;color:var(--text2);margin-bottom:10px;font-family:var(--mono)">同一品項在兩個以上地點購買即可自動比價</div>';html+=rest.map(([n,items],idx)=>(idx>0?'<div class="divider"></div>':'')+buildCG(n,items,false)).join('')+'</div>';}
+
+  // ── Price groups (cross-name comparison) ──
+  if(priceGroups.length){
+    html+='<div class="section-label" style="margin-top:4px">比價群組</div>';
+    html+=priceGroups.map(group=>{
+      // Gather all groceries matching any item in this group
+      const items=groceries.filter(g=>group.items.includes(g.name));
+      if(!items.length)return`<div style="color:var(--text2);font-size:13px;margin-bottom:12px">${group.name}：尚無相關買菜紀錄</div>`;
+      // Per store, find best (lowest) unit price across all items in group
+      const byStore={};
+      items.forEach(g=>{
+        const up=g.qty?g.price/g.qty:g.price;
+        if(!byStore[g.store]||up<byStore[g.store].up)
+          byStore[g.store]={up,unit:g.unit,name:g.name};
+      });
+      const rows=Object.entries(byStore).sort((a,b)=>a[1].up-b[1].up);
+      const maxUp=Math.max(...rows.map(r=>r[1].up));
+      return`<div class="cg" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="cg-title" style="margin-bottom:0">${group.name}</div>
+          <button class="btn btn-sm btn-danger" style="padding:3px 8px;font-size:11px" onclick="deletePriceGroup(${group.id})">刪除</button>
+        </div>
+        <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:8px">包含：${group.items.join('、')}</div>`+
+        rows.map(([store,d],i)=>`<div class="cg-row">
+          <span class="cg-store">${store}</span>
+          <div class="cg-bar" style="width:${Math.round(d.up/maxUp*144)}px;background:${i===0?'var(--sage)':'rgba(255,255,255,.1)'}"></div>
+          <span class="cg-val">$${d.up.toFixed(1)}/${d.unit} <span style="color:var(--text3);font-size:10px">${d.name}</span>${i===0&&rows.length>1?'<span class="tag-cheap">最便宜</span>':''}</span>
+        </div>`).join('')+'</div>';
+    }).join('');
+    html+='<div class="divider"></div>';
+  }
+
+  // ── Auto compare (same name, multiple stores) ──
+  const byName={};
+  groceries.forEach(r=>{if(!byName[r.name])byName[r.name]=[];byName[r.name].push(r);});
+  // Exclude items already in price groups
+  const groupedItems=new Set(priceGroups.flatMap(g=>g.items));
+  const multi=Object.entries(byName).filter(([n,v])=>!groupedItems.has(n)&&[...new Set(v.map(r=>r.store))].length>=2);
+  const rest=Object.entries(byName).filter(([n,v])=>!groupedItems.has(n)&&[...new Set(v.map(r=>r.store))].length<2);
+
+  if(multi.length){
+    html+='<div class="section-label" style="margin-top:4px">自動比價（同名品項）</div>';
+    html+='<div class="card" style="margin-top:0">'+multi.map(([n,items],idx)=>(idx>0?'<div class="divider"></div>':'')+buildCG(n,items,true)).join('')+'</div>';
+  }
+  if(rest.length){
+    html+=`<div class="section-label" style="margin-top:${multi.length?12:4}px">其他品項（單一地點）</div>`;
+    html+='<div class="card" style="margin-top:0">'+rest.map(([n,items],idx)=>(idx>0?'<div class="divider"></div>':'')+buildCG(n,items,false)).join('')+'</div>';
+  }
+  if(!html)html='<div class="empty"><span class="empty-icon">⚖️</span><span class="empty-text">尚無比價資料</span></div>';
   el.innerHTML=html;
 }
+
 function buildCG(name,items,canCompare){
   const byStore={};items.forEach(r=>{const up=r.qty?r.price/r.qty:r.price;if(!byStore[r.store]||up<byStore[r.store].up)byStore[r.store]={up,unit:r.unit};});
   const rows=Object.entries(byStore).sort((a,b)=>a[1].up-b[1].up);const maxUp=Math.max(...rows.map(r=>r[1].up));
   return`<div class="cg"><div class="cg-title">${name}</div>`+rows.map(([store,d],i)=>`<div class="cg-row"><span class="cg-store">${store}</span><div class="cg-bar" style="width:${Math.round(d.up/maxUp*144)}px;background:${i===0&&canCompare?'var(--sage)':'rgba(255,255,255,.1)'}"></div><span class="cg-val">$${d.up.toFixed(1)}/${d.unit}${i===0&&canCompare&&rows.length>1?'<span class="tag-cheap">最便宜</span>':''}</span></div>`).join('')+'</div>';
 }
 
+// ── Saved Recipes ────────────────────────────────────
+let _editSvId=null;
+
+function saveSavedRecipe(){
+  const name=document.getElementById('sv-name').value.trim();
+  if(!name){toast('請輸入食譜名稱');return;}
+  const ingrRaw=document.getElementById('sv-ingredients').value.trim();
+  const stepsRaw=document.getElementById('sv-steps').value.trim();
+  const tagsRaw=document.getElementById('sv-tags').value.trim();
+  if(_editSvId){
+    const idx=savedRecipes.findIndex(x=>x.id===_editSvId);
+    if(idx>=0){
+      savedRecipes[idx]={...savedRecipes[idx],name,
+        type:document.getElementById('sv-type').value,
+        level:document.getElementById('sv-level').value,
+        source:document.getElementById('sv-source').value.trim(),
+        ingredients:ingrRaw,steps:stepsRaw,
+        tags:tagsRaw.split(/\s+/).filter(Boolean),
+        updatedAt:Date.now()};
+    }
+    _editSvId=null;
+    toast('已更新：'+name);
+  } else {
+    savedRecipes.unshift({id:Date.now(),name,
+      type:document.getElementById('sv-type').value,
+      level:document.getElementById('sv-level').value,
+      source:document.getElementById('sv-source').value.trim(),
+      ingredients:ingrRaw,steps:stepsRaw,
+      tags:tagsRaw.split(/\s+/).filter(Boolean),
+      createdAt:Date.now()});
+    toast('已收藏：'+name);
+  }
+  saveAll();
+  resetSvForm();
+  renderSavedRecipes();
+}
+
+function resetSvForm(){
+  ['sv-name','sv-source','sv-ingredients','sv-steps','sv-tags'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  _editSvId=null;
+}
+
+let expandedSv=new Set();
+
+function renderSavedRecipes(){
+  const typeF=document.getElementById('sv-fl-type')?.value||'';
+  const searchF=(document.getElementById('sv-fl-search')?.value||'').trim().toLowerCase();
+  const filtered=savedRecipes.filter(r=>
+    (!typeF||r.type===typeF)&&
+    (!searchF||r.name.toLowerCase().includes(searchF)||
+      r.ingredients?.toLowerCase().includes(searchF)||
+      r.tags?.some(t=>t.toLowerCase().includes(searchF)))
+  );
+  const el=document.getElementById('saved-recipes-list');if(!el)return;
+  if(!filtered.length){
+    el.innerHTML=`<div class="empty"><span class="empty-icon">🔖</span><span class="empty-text">${searchF?'找不到符合的食譜':'尚無收藏食譜'}</span><span class="empty-hint">把看到不錯的料理收藏起來</span></div>`;return;
+  }
+  el.innerHTML=filtered.map(r=>{
+    const exp=expandedSv.has(r.id);
+    const ingrLines=(r.ingredients||'').split('
+').filter(Boolean);
+    const stepLines=(r.steps||'').split('
+').filter(Boolean);
+    return`<div class="recipe-card">
+      <div class="recipe-header" onclick="toggleSv(${r.id})">
+        <div class="recipe-icon" style="background:var(--plum-dim)">${r.type}</div>
+        <div style="flex:1;min-width:0">
+          <div class="recipe-title">${r.name}</div>
+          <div class="recipe-meta">${r.level||''}${r.source?' · '+r.source:''}</div>
+          ${r.tags?.length?`<div style="margin-top:5px">${r.tags.map(t=>`<span style="display:inline-block;padding:1px 7px;border-radius:99px;font-size:10px;background:var(--plum-dim);color:var(--plum);margin-right:4px;font-family:var(--mono)">${t}</span>`).join('')}</div>`:''}
+        </div>
+        <span style="color:var(--text3);font-size:14px;padding-left:4px">${exp?'▲':'▼'}</span>
+      </div>
+      ${exp?`<div class="recipe-body">
+        ${ingrLines.length?`<div class="recipe-section">
+          <div class="rs-title">食材</div>
+          ${ingrLines.map(l=>`<div class="ingr-row"><div class="ingr-dot"></div><span style="font-size:14px;color:var(--text)">${l}</span></div>`).join('')}
+        </div>`:''}
+        ${stepLines.length?`<div class="recipe-section">
+          <div class="rs-title">做法</div>
+          ${stepLines.map((l,i)=>`<div class="step-row"><div class="step-num">${i+1}</div><div class="step-text">${l.replace(/^\d+[\.\、\s]+/,'')}</div></div>`).join('')}
+        </div>`:''}
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+          <button class="btn btn-sm btn-gold" onclick="event.stopPropagation();editSv(${r.id})">編輯</button>
+          <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();delSv(${r.id})">刪除</button>
+        </div>
+      </div>`:''}
+      <button class="expand-toggle" onclick="toggleSv(${r.id})">${exp?'▲ 收起':'▼ 查看食材與做法'}</button>
+    </div>`;
+  }).join('');
+}
+
+function toggleSv(id){if(expandedSv.has(id))expandedSv.delete(id);else expandedSv.add(id);renderSavedRecipes();}
+
+function editSv(id){
+  const r=savedRecipes.find(x=>x.id===id);if(!r)return;
+  _editSvId=id;
+  document.getElementById('sv-name').value=r.name;
+  document.getElementById('sv-type').value=r.type;
+  document.getElementById('sv-level').value=r.level||'⭐';
+  document.getElementById('sv-source').value=r.source||'';
+  document.getElementById('sv-ingredients').value=r.ingredients||'';
+  document.getElementById('sv-steps').value=r.steps||'';
+  document.getElementById('sv-tags').value=(r.tags||[]).join(' ');
+  // Scroll to top of section
+  document.getElementById('tab-saved-recipes')?.scrollTo({top:0,behavior:'smooth'});
+  document.querySelector('#tab-saved-recipes .card')?.scrollIntoView({behavior:'smooth'});
+  toast('已載入，修改後按儲存');
+}
+
+function delSv(id){
+  if(!confirm('確定刪除此收藏食譜？'))return;
+  savedRecipes=savedRecipes.filter(x=>x.id!==id);
+  expandedSv.delete(id);
+  saveAll();renderSavedRecipes();toast('已刪除');
+}
+
 // ── Backup ────────────────────────────────────────────
 function renderBackupStats(){const el=document.getElementById('backup-stats');el.innerHTML=`<b>買菜紀錄：</b>${groceries.length} 筆<br><b>料理紀錄：</b>${recipes.length} 道<br><b>收入紀錄：</b>${incomes.length} 筆<br><b>庫存：</b>${inventory.length} 項<br><b>購物清單：</b>${shopList.length} 項<br><b>儲存位置：</b>Firebase 雲端（即時同步）`;}
-function exportData(){const data={version:4,exportedAt:new Date().toISOString(),groceries,recipes,incomes,incomeCategories,shopList,inventory,customStores,customCats};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`廚房記帳本備份_${today}.json`;a.click();URL.revokeObjectURL(url);toast('備份檔已下載！');}
+function exportData(){const data={version:4,exportedAt:new Date().toISOString(),groceries,recipes,incomes,incomeCategories,shopList,inventory,customStores,customCats,priceGroups,savedRecipes};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`廚房記帳本備份_${today}.json`;a.click();URL.revokeObjectURL(url);toast('備份檔已下載！');}
 function exportCSV(){const h='日期,品項,分類,地點,價格,數量,單位,單價,備註';const rows=groceries.map(g=>[g.date,g.name,g.cat,g.store,g.price,g.qty,g.unit,(g.qty?g.price/g.qty:g.price).toFixed(1),g.note||''].map(v=>`"${v}"`).join(','));const ih='\n\n日期,收入分類,金額,備註';const ir=incomes.map(r=>[r.date,r.cat,r.amount,r.note||''].map(v=>`"${v}"`).join(','));const csv='\uFEFF'+h+'\n'+rows.join('\n')+ih+'\n'+ir.join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`廚房記帳本_${today}.csv`;a.click();URL.revokeObjectURL(url);toast('CSV 已下載！');}
-function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(!data.groceries){toast('格式錯誤');return;}const gIds=new Set(groceries.map(x=>x.id));const rIds=new Set(recipes.map(x=>x.id));const iIds=new Set(incomes.map(x=>x.id));const newG=data.groceries.filter(x=>!gIds.has(x.id));const newR=(data.recipes||[]).filter(x=>!rIds.has(x.id));const newI=(data.incomes||[]).filter(x=>!iIds.has(x.id));groceries=[...groceries,...newG].sort((a,b)=>b.id-a.id);recipes=[...recipes,...newR].sort((a,b)=>b.id-a.id);incomes=[...incomes,...newI].sort((a,b)=>b.id-a.id);if(data.incomeCategories)incomeCategories=[...new Set([...incomeCategories,...data.incomeCategories])];if(data.inventory)inventory=[...inventory,...(data.inventory||[]).filter(x=>!inventory.find(i=>i.id===x.id))];if(data.customStores)customStores=[...new Set([...customStores,...data.customStores])];if(data.customCats){const existEmojis=new Set(customCats.map(c=>c.emoji));customCats=[...customCats,...(data.customCats||[]).filter(c=>!existEmojis.has(c.emoji))];}saveAll();updateTopSub();renderBackupStats();toast(`匯入完成！+${newG.length}買菜 +${newR.length}料理 +${newI.length}收入`);}catch(err){toast('匯入失敗');}input.value='';};reader.readAsText(file);}
-function confirmClear(){document.getElementById('modal-title').textContent='確定清除所有資料？';document.getElementById('modal-msg').textContent=`將刪除 ${groceries.length} 筆買菜、${recipes.length} 道料理、${incomes.length} 筆收入、${inventory.length} 項庫存。此操作無法復原。`;document.getElementById('modal-confirm-btn').onclick=()=>{groceries=[];recipes=[];incomes=[];shopList=[];inventory=[];customStores=[];customCats=[];saveAll();closeModal();updateTopSub();renderBackupStats();toast('所有資料已清除');};document.getElementById('modal-overlay').style.display='flex';}
+function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(!data.groceries){toast('格式錯誤');return;}const gIds=new Set(groceries.map(x=>x.id));const rIds=new Set(recipes.map(x=>x.id));const iIds=new Set(incomes.map(x=>x.id));const newG=data.groceries.filter(x=>!gIds.has(x.id));const newR=(data.recipes||[]).filter(x=>!rIds.has(x.id));const newI=(data.incomes||[]).filter(x=>!iIds.has(x.id));groceries=[...groceries,...newG].sort((a,b)=>b.id-a.id);recipes=[...recipes,...newR].sort((a,b)=>b.id-a.id);incomes=[...incomes,...newI].sort((a,b)=>b.id-a.id);if(data.incomeCategories)incomeCategories=[...new Set([...incomeCategories,...data.incomeCategories])];if(data.inventory)inventory=[...inventory,...(data.inventory||[]).filter(x=>!inventory.find(i=>i.id===x.id))];if(data.customStores)customStores=[...new Set([...customStores,...data.customStores])];if(data.customCats){const existEmojis=new Set(customCats.map(c=>c.emoji));customCats=[...customCats,...(data.customCats||[]).filter(c=>!existEmojis.has(c.emoji))];}
+if(data.savedRecipes){const svIds=new Set(savedRecipes.map(x=>x.id));savedRecipes=[...savedRecipes,...data.savedRecipes.filter(x=>!svIds.has(x.id))];}saveAll();updateTopSub();renderBackupStats();toast(`匯入完成！+${newG.length}買菜 +${newR.length}料理 +${newI.length}收入`);}catch(err){toast('匯入失敗');}input.value='';};reader.readAsText(file);}
+function confirmClear(){document.getElementById('modal-title').textContent='確定清除所有資料？';document.getElementById('modal-msg').textContent=`將刪除 ${groceries.length} 筆買菜、${recipes.length} 道料理、${incomes.length} 筆收入、${inventory.length} 項庫存。此操作無法復原。`;document.getElementById('modal-confirm-btn').onclick=()=>{groceries=[];recipes=[];incomes=[];shopList=[];inventory=[];customStores=[];customCats=[];priceGroups=[];savedRecipes=[];saveAll();closeModal();updateTopSub();renderBackupStats();toast('所有資料已清除');};document.getElementById('modal-overlay').style.display='flex';}
 
 // ── Modal ─────────────────────────────────────────────
 function closeModal(){document.getElementById('modal-overlay').style.display='none';}
@@ -1889,7 +2273,11 @@ const fnMap={
   closeDeductModal,confirmDeduct,
   importFromGroceries,
   toggleQmRow,addQmExtra,removeQmExtra,saveQuickMeal,
-  addCustomStore,removeCustomStore,populateCatSelects
+  addCustomStore,removeCustomStore,populateCatSelects,
+  addEditRStep,removeEditRStep,renderEditRSteps,
+  switchSub,
+  savePriceGroup,deletePriceGroup,addItemToPgDraft,removeFromPgDraft,
+  saveSavedRecipe,toggleSv,editSv,delSv,renderSavedRecipes
 };
 Object.entries(fnMap).forEach(([k,v])=>window[k]=v);
 
@@ -1898,6 +2286,16 @@ initTheme();
 renderStepsBuilder();
 populateStoreSelects();
 populateCatSelects();
+// Init: make sure all main sections except dashboard are hidden
+['shop','record','cookbook','stats'].forEach(id=>{
+  document.getElementById('main-'+id)?.classList.remove('active');
+});
+// Init: show first sub-tab content of each group (hidden until switched to)
+Object.entries(SUB_TABS).forEach(([main,subs])=>{
+  subs.forEach((sub,i)=>{
+    document.getElementById('tab-'+sub)?.classList.toggle('active',i===0);
+  });
+});
 startSync();
 </script>
 </body>
