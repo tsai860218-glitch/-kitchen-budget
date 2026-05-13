@@ -1446,38 +1446,42 @@ function renderWeekCurve(weekData){
 
 // ── Category pie chart helper ────────────────────────
 function renderCatPieHTML(items){
-  const CAT_LABELS={'🥬':'蔬菜','🍖':'肉類','🐟':'海鮮','🥚':'蛋豆奶','🍎':'水果','🧴':'日用品','🛒':'其他'};
-  const CAT_COLORS={'🥬':'#3fb950','🍖':'#f85149','🐟':'#58a6ff','🥚':'#e3a84a','🍎':'#bc8cff','🧴':'#8b949e','🛒':'#484f58'};
+  // Build name lookup from allCats (includes custom cats)
+  const catMap={};allCats().forEach(c=>{catMap[c.emoji]=c.name;});
+  // Fallback palette for dynamic colors
+  const PALETTE=['#f85149','#58a6ff','#3fb950','#e3a84a','#bc8cff','#8b949e','#f0883e','#39d353','#79c0ff','#d2a8ff','#ffa657','#ff7b72'];
   const bycat={};items.forEach(g=>{bycat[g.cat]=(bycat[g.cat]||0)+g.price;});
   if(!Object.keys(bycat).length)return'<div style="color:var(--text2);font-size:13px;font-family:var(--mono)">本月尚無買菜紀錄</div>';
   const total=Object.values(bycat).reduce((a,v)=>a+v,0);
   const rows=Object.entries(bycat).sort((a,b)=>b[1]-a[1]);
+  // Assign colors by index so every category always gets a color
+  const colorOf=(i)=>PALETTE[i%PALETTE.length];
   const R=60,cx=70,cy=70;
   let startAngle=-Math.PI/2;
-  const slices=rows.map(([cat,val])=>{
+  const slices=rows.map(([cat,val],i)=>{
     const angle=(val/total)*2*Math.PI;
     const x1=cx+R*Math.cos(startAngle),y1=cy+R*Math.sin(startAngle);
     startAngle+=angle;
     const x2=cx+R*Math.cos(startAngle),y2=cy+R*Math.sin(startAngle);
     const large=angle>Math.PI?1:0;
-    const color=CAT_COLORS[cat]||'#8b949e';
+    const color=colorOf(i);
     const path=`M${cx},${cy} L${x1},${y1} A${R},${R} 0 ${large} 1 ${x2},${y2} Z`;
     return{path,color,cat,val,pct:Math.round(val/total*100)};
   });
   const svgSlices=slices.map(s=>`<path d="${s.path}" fill="${s.color}" stroke="var(--bg1)" stroke-width="1.5" opacity="0.9"/>`).join('');
-  const legend=rows.map(([cat,val])=>{
-    const pct=Math.round(val/total*100);
-    const color=CAT_COLORS[cat]||'#8b949e';
+  const legend=slices.map((s,i)=>{
+    // label: use catMap for emoji key, fallback to the emoji itself
+    const label=catMap[s.cat]||s.cat;
     return`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
-      <div style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></div>
-      <span style="font-size:13px;flex:1;color:var(--text)">${cat} ${CAT_LABELS[cat]||cat}</span>
-      <span style="font-size:12px;font-family:var(--mono);color:var(--text2)">${pct}%</span>
-      <span style="font-size:12px;font-family:var(--mono);color:var(--text2);min-width:48px;text-align:right">$${val.toLocaleString()}</span>
+      <div style="width:10px;height:10px;border-radius:50%;background:${s.color};flex-shrink:0"></div>
+      <span style="font-size:13px;flex:1;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.cat} ${label}</span>
+      <span style="font-size:12px;font-family:var(--mono);color:var(--text2);flex-shrink:0">${s.pct}%</span>
+      <span style="font-size:12px;font-family:var(--mono);color:var(--text2);min-width:48px;text-align:right;flex-shrink:0">$${s.val.toLocaleString()}</span>
     </div>`;
   }).join('');
   return`<div style="display:flex;align-items:center;gap:16px">
-    <svg viewBox="0 0 140 140" width="120" height="120" style="flex-shrink:0">${svgSlices}</svg>
-    <div style="flex:1">${legend}</div>
+    <svg viewBox="0 0 140 140" width="110" height="110" style="flex-shrink:0">${svgSlices}</svg>
+    <div style="flex:1;min-width:0">${legend}</div>
   </div>`;
 }
 
