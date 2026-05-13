@@ -1675,23 +1675,23 @@ function renderStepsBuilder(){
   document.getElementById('steps-builder').innerHTML=tmpSteps.map((s,i)=>`
     <div class="step-input-row">
       <div class="step-input-num">${i+1}</div>
-      <textarea rows="2" placeholder="步驟描述…" oninput="tmpSteps[${i}]=this.value">${s}</textarea>
+      <textarea rows="2" placeholder="步驟描述…" oninput="window._tmpSteps[${i}]=this.value">${s}</textarea>
       ${tmpSteps.length>1?`<button onclick="removeStep(${i})">×</button>`:''}
     </div>`).join('');
 }
-function addStep(){tmpSteps.push('');renderStepsBuilder();}
-function removeStep(i){tmpSteps.splice(i,1);renderStepsBuilder();}
+function addStep(){tmpSteps.push('');window._tmpSteps=tmpSteps;renderStepsBuilder();}
+function removeStep(i){tmpSteps.splice(i,1);window._tmpSteps=tmpSteps;renderStepsBuilder();}
 
 function addRecipe(){
   const name=document.getElementById('r-name').value.trim();if(!name){toast('請輸入料理名稱');return;}
   const totalCost=tmpIngredients.reduce((a,x)=>a+x.cost,0);
   const servings=parseFloat(document.getElementById('r-servings').value)||2;
   const servingsUnit=document.getElementById('r-servings-unit').value;
-  recipes.unshift({id:Date.now(),name,type:document.getElementById('r-type').value,date:document.getElementById('r-date').value,servings,servingsUnit,time:parseInt(document.getElementById('r-time').value)||0,ingredients:[...tmpIngredients],steps:tmpSteps.filter(s=>s.trim()),totalCost:parseFloat(totalCost.toFixed(0)),costPerUnit:parseFloat((totalCost/servings).toFixed(1)),note:document.getElementById('r-note').value.trim(),rating:tmpRating});
+  recipes.unshift({id:Date.now(),name,type:document.getElementById('r-type').value,date:document.getElementById('r-date').value,servings,servingsUnit,time:parseInt(document.getElementById('r-time').value)||0,ingredients:[...tmpIngredients],steps:(window._tmpSteps||tmpSteps).filter(s=>s.trim()),totalCost:parseFloat(totalCost.toFixed(0)),costPerUnit:parseFloat((totalCost/servings).toFixed(1)),note:document.getElementById('r-note').value.trim(),rating:tmpRating});
   saveR();
   document.getElementById('r-name').value='';document.getElementById('r-servings').value='2';document.getElementById('r-time').value='';document.getElementById('r-note').value='';
   const savedIngredients=[...tmpIngredients];
-  tmpIngredients=[];tmpSteps=[''];tmpRating=0;
+  tmpIngredients=[];tmpSteps=[''];window._tmpSteps=tmpSteps;tmpRating=0;
   renderIngrTags();updateCostPreview();renderStepsBuilder();
   document.querySelectorAll('#rate-stars .star').forEach(s=>s.classList.remove('on'));
   updateTopSub();
@@ -1785,18 +1785,18 @@ function renderEditRSteps(){
   el.innerHTML=_editRSteps.map((s,i)=>`
     <div class="step-input-row">
       <div class="step-input-num">${i+1}</div>
-      <textarea rows="2" placeholder="步驟描述…" oninput="_editRSteps[${i}]=this.value">${s}</textarea>
+      <textarea rows="2" placeholder="步驟描述…" oninput="window._editRSteps[${i}]=this.value">${s}</textarea>
       ${_editRSteps.length>1?`<button onclick="removeEditRStep(${i})">×</button>`:''}
     </div>`).join('');
 }
 
-function addEditRStep(){_editRSteps.push('');renderEditRSteps();}
-function removeEditRStep(i){_editRSteps.splice(i,1);renderEditRSteps();}
+function addEditRStep(){_editRSteps.push('');window._editRSteps=_editRSteps;renderEditRSteps();}
+function removeEditRStep(i){_editRSteps.splice(i,1);window._editRSteps=_editRSteps;renderEditRSteps();}
 
 function openEditR(id){
   const r=recipes.find(x=>x.id===id);if(!r)return;
   _editRId=id;_editRRating=r.rating||0;
-  _editRSteps=r.steps&&r.steps.length?[...r.steps]:[''];
+  _editRSteps=r.steps&&r.steps.length?[...r.steps]:[''];window._editRSteps=_editRSteps;
   document.getElementById('er-name').value=r.name;
   document.getElementById('er-type').value=r.type;
   document.getElementById('er-date').value=r.date;
@@ -1815,7 +1815,7 @@ function saveEditR(){
   const name=document.getElementById('er-name').value.trim();if(!name){toast('請輸入料理名稱');return;}
   const servings=parseFloat(document.getElementById('er-servings').value)||2;
   const totalCost=recipes[idx].totalCost;
-  const steps=_editRSteps.filter(s=>s.trim());
+  const steps=(_editRSteps||window._editRSteps||[]).filter(s=>s.trim());
   recipes[idx]={...recipes[idx],name,type:document.getElementById('er-type').value,date:document.getElementById('er-date').value,servings,servingsUnit:document.getElementById('er-servings-unit').value,time:parseInt(document.getElementById('er-time').value)||0,note:document.getElementById('er-note').value.trim(),rating:_editRRating,steps,costPerUnit:parseFloat((totalCost/servings).toFixed(1))};
   saveR();closeEditR();renderRecipes();updateRecipeStats();toast('已更新：'+name);
 }
@@ -2528,6 +2528,9 @@ const fnMap={
   saveSavedRecipe,toggleSv,editSv,delSv,renderSavedRecipes
 };
 Object.entries(fnMap).forEach(([k,v])=>window[k]=v);
+// Expose mutable arrays needed by inline oninput handlers
+window._tmpSteps=tmpSteps;
+window._editRSteps=_editRSteps;
 
 // ── Init ─────────────────────────────────────────────
 initTheme();
