@@ -557,19 +557,6 @@ select option{background:#fff;color:var(--text)}
 
 ::-webkit-scrollbar{width:0;height:0}
 </style>
-  <!-- Firebase compat SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script>
-    firebase.initializeApp({
-      apiKey:"AIzaSyDT-GLJvEZ9WAew1tkMd9L9ESYBSeuyv_o",
-      authDomain:"kitchen-budget.firebaseapp.com",
-      projectId:"kitchen-budget",
-      storageBucket:"kitchen-budget.firebasestorage.app",
-      messagingSenderId:"169810817679",
-      appId:"1:169810817679:web:edd11e94f7df047e1fb6fa"
-    });
-  </script>
 </head>
 <body>
 
@@ -1107,9 +1094,24 @@ select option{background:#fff;color:var(--text)}
 
 <div class="toast" id="toast"></div>
 
+
+
+<!-- Firebase SDK (compat - no ES modules needed) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
-// Firebase already initialized above
-const DATA_DOC = firebase.firestore().collection('family').doc('shared');
+firebase.initializeApp({
+  apiKey:"AIzaSyDT-GLJvEZ9WAew1tkMd9L9ESYBSeuyv_o",
+  authDomain:"kitchen-budget.firebaseapp.com",
+  projectId:"kitchen-budget",
+  storageBucket:"kitchen-budget.firebasestorage.app",
+  messagingSenderId:"169810817679",
+  appId:"1:169810817679:web:edd11e94f7df047e1fb6fa"
+});
+var DATA_DOC = firebase.firestore().collection('family').doc('shared');
+</script>
+
+<script>
 
 // ── Data ─────────────────────────────────────────────
 let groceries=[],recipes=[],incomes=[],incomeCategories=["薪資","固定收入","額外收入","租金","投資"],shopList=[],inventory=[],customStores=[],customCats=[],priceGroups=[],savedRecipes=[];
@@ -2528,6 +2530,7 @@ Object.entries(SUB_TABS).forEach(([main,subs])=>{
 // Render empty dashboard placeholder while syncing
 renderDashboard();
 startSync();
+
 </script>
 </body>
 </html>
