@@ -1094,21 +1094,28 @@ select option{background:#fff;color:var(--text)}
 
 <div class="toast" id="toast"></div>
 
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-const firebaseConfig = {
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+// Init Firebase (compat mode - no ES module needed)
+const _fbApp = firebase.initializeApp({
   apiKey: "AIzaSyDT-GLJvEZ9WAew1tkMd9L9ESYBSeuyv_o",
   authDomain: "kitchen-budget.firebaseapp.com",
   projectId: "kitchen-budget",
   storageBucket: "kitchen-budget.firebasestorage.app",
   messagingSenderId: "169810817679",
   appId: "1:169810817679:web:edd11e94f7df047e1fb6fa"
+});
+window._db = firebase.firestore();
+window._firestore = {
+  doc: (db, ...path) => db.collection(path[0]).doc(path[1]),
+  setDoc: (ref, data) => ref.set(data),
+  onSnapshot: (ref, cb, err) => ref.onSnapshot(cb, err)
 };
-const fbApp = initializeApp(firebaseConfig);
-const db = getFirestore(fbApp);
-const DATA_DOC = doc(db, 'family', 'shared');
+</script>
+<script>
+// App logic
+const DATA_DOC = window._db.collection('family').doc('shared');
 
 // ── Data ─────────────────────────────────────────────
 let groceries=[],recipes=[],incomes=[],incomeCategories=["薪資","固定收入","額外收入","租金","投資"],shopList=[],inventory=[],customStores=[],customCats=[],priceGroups=[],savedRecipes=[];
@@ -1126,7 +1133,7 @@ function allStores(){return [...DEFAULT_STORES,...customStores];}
 function saveAll(){
   clearTimeout(_saveTimer);
   _saveTimer=setTimeout(async()=>{
-    try{await setDoc(DATA_DOC,{groceries,recipes,incomes,incomeCategories,shopList,inventory,customStores,customCats,priceGroups,savedRecipes,updatedAt:Date.now()});}
+    try{await DATA_DOC.set({groceries,recipes,incomes,incomeCategories,shopList,inventory,customStores,customCats,priceGroups,savedRecipes,updatedAt:Date.now()});}
     catch(e){toast('⚠️ 儲存失敗');}
   },600);
 }
@@ -1134,8 +1141,8 @@ const saveG=saveAll,saveR=saveAll,saveI=saveAll,saveIC=saveAll,saveSL=saveAll,sa
 
 function startSync(){
   document.getElementById('top-sub').textContent='同步中…';
-  onSnapshot(DATA_DOC,(snap)=>{
-    if(snap.exists()){
+  DATA_DOC.onSnapshot((snap)=>{
+    if(snap.exists){
       const d=snap.data();
       groceries=d.groceries||[];recipes=d.recipes||[];incomes=d.incomes||[];
       incomeCategories=d.incomeCategories||["薪資","固定收入","額外收入","租金","投資"];
