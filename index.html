@@ -107,6 +107,12 @@ select option{background:#fff;color:var(--text)}
 /* List items */
 .list{display:flex;flex-direction:column;gap:9px;padding-bottom:8px}
 .litem{background:var(--surface);border:2px solid var(--border);border-radius:var(--r);padding:12px 13px;display:flex;align-items:center;gap:11px;box-shadow:var(--clay-sm);cursor:pointer;transition:all .12s}
+.date-group{margin-bottom:14px}
+.date-header{display:flex;align-items:center;justify-content:space-between;padding:8px 4px 6px;margin-bottom:6px;border-bottom:2px solid var(--border)}
+.date-header-lbl{font-size:13px;font-weight:800;color:var(--text);font-family:monospace}
+.date-header-total{font-size:13px;font-weight:800;color:var(--gold);font-family:monospace}
+.date-group .litem{margin-bottom:8px}
+.date-group .litem:last-child{margin-bottom:0}
 .litem:active{transform:scale(.98)}
 .licon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;box-shadow:inset 0 -2px 0 rgba(0,0,0,.07)}
 .lmain{flex:1;min-width:0}
@@ -1137,25 +1143,90 @@ function renderGroceries(){
   var catF = document.getElementById('gfl-cat').value;
   var sortF = document.getElementById('gfl-sort').value;
   var searchF = (document.getElementById('gfl-search').value||'').trim().toLowerCase();
+
+  // Update store options
   var stores = [...new Set(DATA.groceries.map(function(r){ return r.store; }))];
   var sel = document.getElementById('gfl-store'); var cur=sel.value;
   sel.innerHTML = '<option value="">所有地點</option>'+stores.map(function(s){ return '<option value="'+s+'"'+(s===cur?' selected':'')+'>'+s+'</option>'; }).join('');
-  var filtered = DATA.groceries.filter(function(r){ return (!storeF||r.store===storeF)&&(!catF||r.cat===catF)&&(!searchF||r.name.toLowerCase().indexOf(searchF)!==-1||(r.note&&r.note.toLowerCase().indexOf(searchF)!==-1)); });
+
+  // Update cat options dynamically
+  var catSel = document.getElementById('gfl-cat'); var curCat=catSel.value;
+  catSel.innerHTML = '<option value="">所有分類</option>'+allCats().map(function(c){ return '<option value="'+c.emoji+'"'+(c.emoji===curCat?' selected':'')+'>'+c.emoji+' '+c.name+'</option>'; }).join('');
+
+  // Filter
+  var filtered = DATA.groceries.filter(function(r){
+    return (!storeF||r.store===storeF)&&(!catF||r.cat===catF)&&(!searchF||r.name.toLowerCase().indexOf(searchF)!==-1||(r.note&&r.note.toLowerCase().indexOf(searchF)!==-1));
+  });
+
+  // Sort
   filtered = filtered.slice().sort(function(a,b){
-    if(sortF==='new') return b.id-a.id;
-    if(sortF==='old') return a.id-b.id;
+    if(sortF==='old') return (a.date||'').localeCompare(b.date||'')||a.id-b.id;
     if(sortF==='price-h') return b.price-a.price;
     if(sortF==='price-l') return a.price-b.price;
     if(sortF==='name') return a.name.localeCompare(b.name,'zh-TW');
-    return 0;
+    return (b.date||'').localeCompare(a.date||'')||b.id-a.id;
   });
+
   var el = document.getElementById('grocery-list');
-  if(!filtered.length){ el.innerHTML='<div class="empty"><span class="empty-icon">🛒</span><span class="empty-t">'+(searchF?'找不到符合的紀錄':'尚無買菜紀錄')+'</span><span class="empty-s">點下方「買菜」新增第一筆</span></div>'; return; }
-  el.innerHTML = filtered.map(function(r){
-    var c = storeColor(r.store);
-    var up = r.qty?(r.price/r.qty).toFixed(1):'-';
-    return '<div class="litem" onclick="openEG('+r.id+')"><div class="licon" style="background:'+c[0]+'">'+r.cat+'</div><div class="lmain"><div class="lname">'+r.name+(r.note?' <span style="font-weight:400;color:var(--text2);font-size:12px">('+r.note+')</span>':'')+'</div><div class="lmeta">'+r.date+' · '+r.qty+r.unit+'</div><span class="lbadge" style="background:'+c[0]+';color:'+c[1]+'">'+r.store+'</span></div><div class="lright"><div class="lprice">$'+r.price+'</div><div class="lunit">$'+up+'/'+r.unit+'</div></div><span style="color:var(--text3);font-size:14px;padding-left:4px">›</span></div>';
+  if(!filtered.length){
+    el.innerHTML='<div class="empty"><span class="empty-icon">🛒</span><span class="empty-t">'+(searchF||catF||storeF?'找不到符合的紀錄':'尚無買菜紀錄')+'</span><span class="empty-s">點下方「買菜」新增第一筆</span></div>';
+    return;
+  }
+
+  // Flat list for price/name sort
+  if(sortF==='price-h'||sortF==='price-l'||sortF==='name'){
+    el.innerHTML=filtered.map(function(r){ return gItemHtml(r); }).join('');
+    return;
+  }
+
+  // Date-grouped
+  var groups={}, order=[];
+  filtered.forEach(function(r){
+    var d=r.date||'未知日期';
+    if(!groups[d]){groups[d]=[];order.push(d);}
+    groups[d].push(r);
+  });
+
+  el.innerHTML=order.map(function(date){
+    var items=groups[date];
+    var total=items.reduce(function(a,r){return a+r.price;},0);
+    return '<div class="date-group">'
+      +'<div class="date-header">'
+      +'<span class="date-header-lbl">'+fmtDate(date)+'</span>'
+      +'<span class="date-header-total">合計 $'+total.toLocaleString()+'</span>'
+      +'</div>'
+      +items.map(function(r){return gItemHtml(r);}).join('')
+      +'</div>';
   }).join('');
+}
+
+function fmtDate(s){
+  if(!s||s==='未知日期') return '未知日期';
+  try{
+    var d=new Date(s), now=new Date();
+    var today=now.toISOString().split('T')[0];
+    var yest=new Date(now-86400000).toISOString().split('T')[0];
+    var dow=['日','一','二','三','四','五','六'][d.getDay()];
+    var label=(d.getMonth()+1)+'月'+d.getDate()+'日 週'+dow;
+    if(s===today) return '今天 · '+label;
+    if(s===yest) return '昨天 · '+label;
+    return label;
+  }catch(e){return s;}
+}
+
+function gItemHtml(r){
+  var c=storeColor(r.store);
+  var up=r.qty?(r.price/r.qty).toFixed(1):'-';
+  return '<div class="litem" onclick="openEG('+r.id+')">'
+    +'<div class="licon" style="background:'+c[0]+'">'+r.cat+'</div>'
+    +'<div class="lmain">'
+    +'<div class="lname">'+r.name+(r.note?' <span style="font-weight:400;color:var(--text2);font-size:12px">('+r.note+')</span>':'')+'</div>'
+    +'<div class="lmeta">'+r.qty+r.unit+'</div>'
+    +'<span class="lbadge" style="background:'+c[0]+';color:'+c[1]+'">'+r.store+'</span>'
+    +'</div>'
+    +'<div class="lright"><div class="lprice">$'+r.price+'</div><div class="lunit">$'+up+'/'+r.unit+'</div></div>'
+    +'<span style="color:var(--text3);font-size:14px;padding-left:4px">›</span>'
+    +'</div>';
 }
 function openEG(id){
   var r = DATA.groceries.find(function(x){ return x.id===id; }); if(!r) return;
