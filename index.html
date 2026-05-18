@@ -159,6 +159,7 @@ select option{background:#fff;color:var(--text)}
 .tag{display:flex;align-items:center;gap:5px;background:var(--lav-bg);color:var(--lav-t);padding:6px 11px 6px 13px;border-radius:99px;font-size:13px;font-weight:700;border:2px solid var(--lav)}
 .tag button{background:none;border:none;cursor:pointer;color:var(--lav-t);font-size:15px;line-height:1;padding:0;opacity:.6}
 .tag.mint{background:var(--mint-bg);color:var(--mint-t);border-color:var(--mint)}
+.tag.lav{background:var(--lav-bg);color:var(--lav-t);border-color:var(--lav)}
 .tag.mint button{color:var(--mint-t)}
 
 /* Cat tags */
@@ -393,94 +394,26 @@ select option{background:#fff;color:var(--text)}
 
 <!-- RECORD -->
 <div id="page-record" class="page">
-  <div class="stabs" id="record-stabs">
-    <button class="stab on" onclick="showStab('record','quick')">⚡ 快速記錄</button>
-    <button class="stab" onclick="showStab('record','recipe')">🍳 完整料理</button>
-  </div>
-  <!-- Quick meal -->
+  <!-- Simple meal record - no cost/rating/steps -->
   <div id="record-quick" class="stab-page">
     <div class="card" style="margin-top:2px">
-      <div class="ctitle">快速記錄一餐</div>
-      <div class="fg"><label>餐點名稱（選填）</label><input type="text" id="qm-name" placeholder="晚餐、泡菜鍋…"></div>
-      <div class="r2">
-        <div class="fg"><label>日期</label><input type="date" id="qm-date"></div>
-        <div class="fg"><label>份數</label>
-          <div style="display:flex;gap:6px">
-            <input type="number" id="qm-sv" value="2" style="flex:1" inputmode="numeric">
-            <select id="qm-sv-unit" style="flex:1"><option>人份</option><option>顆</option><option>份</option><option>碗</option><option>鍋</option></select>
-          </div>
-        </div>
-      </div>
+      <div class="ctitle">記錄一餐</div>
+      <div class="fg"><label>餐點名稱（選填）</label><input type="text" id="qm-name" placeholder="晚餐、泡菜鍋、隨便煮…"></div>
+      <div class="fg"><label>日期</label><input type="date" id="qm-date"></div>
     </div>
     <div class="card">
-      <div class="ctitle">勾選今天用的食材</div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:10px">從庫存和近期買菜選取，輸入使用量</div>
+      <div class="ctitle">用了哪些食材？</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:12px">勾選就好，不用輸入用量</div>
       <div id="qm-ingr-list"></div>
       <div class="divider"></div>
-      <div class="sec-label">手動加入其他食材</div>
-      <div class="r3" style="margin-bottom:8px">
-        <div class="fg" style="margin-bottom:0"><input type="text" id="qm-extra-name" placeholder="食材名"></div>
-        <div class="fg" style="margin-bottom:0"><input type="number" id="qm-extra-cost" placeholder="成本" inputmode="decimal"></div>
-        <button class="btn btn-sm" style="height:42px" onclick="addQmExtra()">加入</button>
+      <div class="sec-label">加入其他食材</div>
+      <div style="display:flex;gap:8px;margin-bottom:4px">
+        <input type="text" id="qm-extra-name" placeholder="食材名稱" style="flex:1">
+        <button class="btn btn-sm" onclick="addQmExtra()">加入</button>
       </div>
       <div id="qm-extra-tags" class="tags-wrap"></div>
-      <div class="cost-box"><span class="cl">預估食材成本</span><span class="cv" id="qm-cost">$0</span></div>
     </div>
     <button class="btn-primary" style="margin:0 0 14px" onclick="saveQuickMeal()">記錄這一餐</button>
-  </div>
-  <!-- Full recipe -->
-  <div id="record-recipe" class="stab-page" style="display:none">
-    <div class="card" style="margin-top:2px">
-      <div class="ctitle">料理資訊</div>
-      <div class="fg"><label>料理名稱</label><input type="text" id="r-name" placeholder="蒜炒高麗菜、番茄炒蛋"></div>
-      <div class="r2">
-        <div class="fg"><label>類型</label><select id="r-type"><option value="🥗">🥗 蔬食</option><option value="🍳">🍳 蛋料理</option><option value="🥩">🥩 肉類</option><option value="🐟">🐟 海鮮</option><option value="🍜">🍜 麵飯</option><option value="🍲">🍲 湯品</option><option value="🥘">🥘 其他</option></select></div>
-        <div class="fg"><label>日期</label><input type="date" id="r-date"></div>
-      </div>
-      <div class="r3">
-        <div class="fg"><label>數量</label><input type="number" id="r-sv" value="2" step="0.1" inputmode="decimal"></div>
-        <div class="fg"><label>單位</label><select id="r-sv-unit"><option>人份</option><option>顆</option><option>條</option><option>份</option><option>盤</option><option>碗</option><option>鍋</option><option>個</option></select></div>
-        <div class="fg"><label>時間（分）</label><input type="number" id="r-time" placeholder="20" inputmode="numeric"></div>
-      </div>
-      <div class="fg"><label>評分</label>
-        <div class="stars" id="r-stars">
-          <button class="star" onclick="setRating(this,1,false)">★</button>
-          <button class="star" onclick="setRating(this,2,false)">★</button>
-          <button class="star" onclick="setRating(this,3,false)">★</button>
-          <button class="star" onclick="setRating(this,4,false)">★</button>
-          <button class="star" onclick="setRating(this,5,false)">★</button>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="ctitle">食材與成本</div>
-      <div id="r-ingr-tags" class="tags-wrap"></div>
-      <div class="ipicker">
-        <div class="sec-label" style="margin-bottom:8px">從買菜紀錄選取</div>
-        <div class="ipick-row">
-          <select id="ingr-select"><option value="">選擇食材…</option></select>
-          <input type="number" id="ingr-qty" placeholder="用量" step="0.01" inputmode="decimal">
-          <span id="ingr-unit-lbl">-</span>
-        </div>
-        <button class="btn btn-sm" style="width:100%" onclick="addIngr()">加入食材</button>
-      </div>
-      <div class="sec-label" style="margin:10px 0 7px">或手動輸入</div>
-      <div class="r3" style="margin-bottom:4px">
-        <div class="fg" style="margin-bottom:0"><input type="text" id="m-ingr-name" placeholder="食材名"></div>
-        <div class="fg" style="margin-bottom:0"><input type="number" id="m-ingr-cost" placeholder="成本" inputmode="decimal"></div>
-        <button class="btn btn-sm" style="width:100%;height:42px" onclick="addManualIngr()">加入</button>
-      </div>
-      <div class="cost-box"><span class="cl">預估食材成本</span><span class="cv" id="r-cost-preview">$0</span></div>
-    </div>
-    <div class="card">
-      <div class="ctitle">烹飪步驟</div>
-      <div id="r-steps-builder" class="step-builder"></div>
-      <button class="btn-dashed" onclick="addStep()">＋ 新增步驟</button>
-    </div>
-    <div class="card">
-      <div class="fg"><label>備註（選填）</label><textarea id="r-note" rows="2" placeholder="小技巧、口感調整…"></textarea></div>
-      <button class="btn-primary" onclick="saveRecipe()">儲存料理紀錄</button>
-    </div>
   </div>
 </div>
 
@@ -495,13 +428,14 @@ select option{background:#fff;color:var(--text)}
   <div id="cookbook-history" class="stab-page">
     <div class="sgrid">
       <div class="scard"><div class="slabel">本月料理</div><div class="sval" id="rs-count">0</div></div>
-      <div class="scard"><div class="slabel">食材成本</div><div class="sval" id="rs-cost">$0</div></div>
-      <div class="scard"><div class="slabel">平均評分</div><div class="sval" id="rs-rating">-</div></div>
+      <div class="scard"><div class="slabel">總紀錄數</div><div class="sval" id="rs-total">0</div></div>
+      <div class="scard"><div class="slabel">常做類型</div><div class="sval sm" id="rs-top">-</div></div>
+    </div>
     </div>
     <div class="frow">
       <select class="fsel" id="rfl-type" onchange="renderRecipes()"><option value="">所有類型</option><option value="🥗">🥗 蔬食</option><option value="🍳">🍳 蛋料理</option><option value="🥩">🥩 肉類</option><option value="🐟">🐟 海鮮</option><option value="🍜">🍜 麵飯</option><option value="🍲">🍲 湯品</option><option value="🥘">🥘 其他</option></select>
-      <select class="fsel" id="rfl-rating" onchange="renderRecipes()"><option value="">所有評分</option><option value="5">★★★★★</option><option value="4">★★★★</option><option value="3">★★★</option></select>
-      <select class="fsel" id="rfl-sort" onchange="renderRecipes()"><option value="new">最新</option><option value="cost-h">成本↓</option><option value="rating-h">評分↓</option></select>
+      
+      <select class="fsel" id="rfl-sort" onchange="renderRecipes()"><option value="new">最新</option><option value="old">最舊</option><option value="name">名稱</option></select>
     </div>
     <input class="fsearch" type="text" id="rfl-search" placeholder="🔍 搜尋料理…" oninput="renderRecipes()" style="width:100%;border-radius:99px;margin-bottom:10px">
     <div id="recipe-list"></div>
@@ -968,9 +902,10 @@ function renderStabPage(page, tab){
     if(tab==='shoplist'){ renderShopList(); renderQuickAdd(); }
     if(tab==='inventory') renderInventory();
   }
-  if(page==='record'){
-    if(tab==='quick') renderQM();
+    if(page==='record'){
+    renderQM();
   }
+
   if(page==='cookbook'){
     if(tab==='history'){ renderRecipes(); updateRecipeStats(); }
     if(tab==='saved') renderSavedRecipes();
@@ -1437,45 +1372,78 @@ function saveRecipe(){
 function updateRecipeStats(){
   var now=new Date();
   var m=DATA.recipes.filter(function(r){ var d=new Date(r.date); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear(); });
-  document.getElementById('rs-count').textContent=m.length;
-  document.getElementById('rs-cost').textContent='$'+m.reduce(function(a,r){ return a+r.totalCost; },0).toLocaleString();
-  var rated=DATA.recipes.filter(function(r){ return r.rating>0; });
-  var avg=rated.length?rated.reduce(function(a,r){ return a+r.rating; },0)/rated.length:0;
-  document.getElementById('rs-rating').textContent=avg?avg.toFixed(1)+'★':'-';
+  var el=document.getElementById('rs-count'); if(el) el.textContent=m.length;
+  var el2=document.getElementById('rs-total'); if(el2) el2.textContent=DATA.recipes.length;
+  // Most common type
+  var tc={};DATA.recipes.forEach(function(r){tc[r.type]=(tc[r.type]||0)+1;});
+  var top=Object.entries(tc).sort(function(a,b){return b[1]-a[1];})[0];
+  var el3=document.getElementById('rs-top'); if(el3) el3.textContent=top?top[0]:'-';
 }
 function renderRecipes(){
   var typeF=document.getElementById('rfl-type').value;
-  var ratingF=document.getElementById('rfl-rating').value;
   var sortF=document.getElementById('rfl-sort').value;
-  var searchF=(document.getElementById('rfl-search').value||'').trim().toLowerCase();
-  var filtered=DATA.recipes.filter(function(r){ return (!typeF||r.type===typeF)&&(!ratingF||r.rating>=parseInt(ratingF))&&(!searchF||r.name.toLowerCase().indexOf(searchF)!==-1); });
-  filtered=filtered.slice().sort(function(a,b){ if(sortF==='new') return b.id-a.id; if(sortF==='cost-h') return b.totalCost-a.totalCost; if(sortF==='rating-h') return (b.rating||0)-(a.rating||0); return 0; });
+  var searchF=(document.getElementById('rfl-search')&&document.getElementById('rfl-search').value||'').trim().toLowerCase();
+  var filtered=DATA.recipes.filter(function(r){
+    return(!typeF||r.type===typeF)&&(!searchF||r.name.toLowerCase().indexOf(searchF)!==-1);
+  });
+  filtered=filtered.slice().sort(function(a,b){
+    if(sortF==='old') return a.id-b.id;
+    if(sortF==='name') return a.name.localeCompare(b.name,'zh-TW');
+    return b.id-a.id;
+  });
   var el=document.getElementById('recipe-list'); if(!el) return;
-  if(!filtered.length){ el.innerHTML='<div class="empty"><span class="empty-icon">🍳</span><span class="empty-t">'+(searchF?'找不到':'尚無料理紀錄')+'</span></div>'; return; }
-  el.innerHTML=filtered.map(function(r){
-    var exp=STATE.expandedR.has(r.id);
-    var sv=STATE.rsvingMap[r.id]||r.servings;
-    var sunit=r.servingsUnit||'人份';
-    var ratio=sv/r.servings;
-    var stars=r.rating?'★'.repeat(r.rating)+'☆'.repeat(5-r.rating):'';
-    var ingrH=r.ingredients&&r.ingredients.length?r.ingredients.map(function(x){ return '<div class="ingr-row2"><div class="idot"></div><span>'+x.name+'</span><span style="color:var(--text2);margin-left:4px;font-size:12px">'+(x.qty*ratio).toFixed(1)+x.unit+'</span><span style="margin-left:auto;color:var(--text2);font-size:12px">$'+(x.cost*ratio).toFixed(0)+'</span></div>'; }).join(''):'<div style="color:var(--text2);font-size:13px">未記錄食材</div>';
-    var stepsH=r.steps&&r.steps.length?r.steps.map(function(s,i){ return '<div class="step-row2"><div class="snum">'+(i+1)+'</div><div class="stext">'+s+'</div></div>'; }).join(''):'<div style="color:var(--text2);font-size:13px">未記錄步驟</div>';
-    return '<div class="rcard">' +
-      '<div class="rheader" onclick="toggleR('+r.id+')">' +
-        '<div class="ricon">'+r.type+'</div>' +
-        '<div style="flex:1;min-width:0"><div class="rtitle">'+r.name+'</div><div class="rmeta">'+r.date+' · '+sv+sunit+(r.time?' · '+r.time+'分':'')+' '+(stars?'<span style="color:var(--yellow)">'+stars+'</span>':'')+'</div></div>' +
-        '<div><div class="rcost">$'+Math.round(r.totalCost*ratio)+'</div><div class="rcost-sub">$'+((r.costPerUnit||0)*ratio).toFixed(0)+'/'+sunit+'</div></div>' +
-      '</div>' +
-      (exp?'<div class="rbody">' +
-        '<div class="svc" style="margin-top:12px"><label style="flex:1;font-size:13px;color:var(--text2);font-weight:700;margin:0;text-transform:none;letter-spacing:0">調整數量（'+sunit+'）</label><button class="svbtn" onclick="event.stopPropagation();changeSv('+r.id+',-1)">−</button><span class="svn">'+sv+'</span><button class="svbtn" onclick="event.stopPropagation();changeSv('+r.id+',1)">＋</button></div>' +
-        '<div class="rsec"><div class="rsec-title">食材（'+sv+sunit+'）</div>'+ingrH+'</div>' +
-        '<div class="rsec"><div class="rsec-title">做法</div>'+stepsH+'</div>' +
-        (r.note?'<div class="rsec"><div class="rsec-title">備註</div><div style="font-size:14px;line-height:1.7">'+r.note+'</div></div>':'') +
-        '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button class="btn btn-sm btn-gold" onclick="event.stopPropagation();openER('+r.id+')">編輯</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();confirmDelR('+r.id+')">刪除</button></div>' +
-      '</div>':'') +
-      '<button class="expand-btn" onclick="toggleR('+r.id+')">'+(exp?'▲ 收起':'▼ 查看食材與做法')+'</button>' +
-    '</div>';
+  if(!filtered.length){
+    el.innerHTML='<div class="empty"><span class="empty-icon">🍳</span><span class="empty-t">'+(searchF?'找不到符合的料理':'尚無料理紀錄')+'</span><span class="empty-s">點下方「記錄」新增第一餐</span></div>';
+    return;
+  }
+  // Group by date desc
+  var groups={}, order=[];
+  filtered.forEach(function(r){
+    var d=r.date||'未知日期';
+    if(!groups[d]){groups[d]=[];order.push(d);}
+    groups[d].push(r);
+  });
+  if(sortF==='name'){
+    // Flat list for name sort
+    el.innerHTML=filtered.map(function(r){ return recipeCardHtml(r); }).join('');
+    return;
+  }
+  el.innerHTML=order.map(function(date){
+    var items=groups[date];
+    return '<div class="date-group">'
+      +'<div class="date-header"><span class="date-header-lbl">'+fmtDate(date)+'</span><span style="font-size:12px;color:var(--text2);font-family:monospace">'+items.length+' 餐</span></div>'
+      +items.map(function(r){ return recipeCardHtml(r); }).join('')
+      +'</div>';
   }).join('');
+}
+
+function recipeCardHtml(r){
+  var ingrList=(r.ingredients&&r.ingredients.length)
+    ?r.ingredients.map(function(x){return x.name;}).join('、')
+    :'未記錄食材';
+  var expanded=STATE.expandedR&&STATE.expandedR.has(r.id);
+  return '<div class="rcard" style="margin-bottom:10px">'
+    +'<div class="rcard-hd" onclick="toggleR('+r.id+')">'
+    +'<div class="rcard-icon">'+r.type+'</div>'
+    +'<div style="flex:1;min-width:0">'
+    +'<div style="font-size:15px;font-weight:700;color:var(--text)">'+r.name+'</div>'
+    +'<div style="font-size:12px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+ingrList+'</div>'
+    +'</div>'
+    +'<span style="color:var(--text3);font-size:13px;flex-shrink:0">'+(expanded?'▲':'▼')+'</span>'
+    +'</div>'
+    +(expanded?'<div class="rcard-body">'
+      +'<div class="rs-lbl">用了哪些食材</div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">'
+      +(r.ingredients&&r.ingredients.length
+        ?r.ingredients.map(function(x){ return '<span class="tag lav">'+x.name+'</span>'; }).join('')
+        :'<span style="color:var(--text2);font-size:13px">未記錄</span>')
+      +'</div>'
+      +(r.note?'<div class="rs-lbl">備註</div><div style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:8px">'+r.note+'</div>':'')
+      +'<div style="display:flex;justify-content:flex-end">'
+      +'<button class="btn btn-sm" style="background:var(--pink-bg);color:var(--pink-t);border-color:var(--pink)" onclick="event.stopPropagation();delRecipe('+r.id+')">刪除</button>'
+      +'</div>'
+      +'</div>':'')
+    +'</div>';
 }
 function toggleR(id){ if(STATE.expandedR.has(id)) STATE.expandedR.delete(id); else STATE.expandedR.add(id); renderRecipes(); }
 function changeSv(id,d){ var r=DATA.recipes.find(function(x){ return x.id===id; }); if(!r) return; STATE.rsvingMap[id]=Math.max(0.5,parseFloat(((STATE.rsvingMap[id]||r.servings)+d).toFixed(1))); renderRecipes(); }
@@ -1545,24 +1513,30 @@ function doDeduct(){
 var qmAllItems=[];
 function renderQM(){
   document.getElementById('qm-date').value=today;
-  STATE.qmExtras=[]; renderQmExtras(); updateQmCost();
+  STATE.qmExtras=[]; renderQmExtras();
+  // Build item list: inventory first, then recent groceries
   var invItems=DATA.inventory.map(function(i){ return {name:i.name,unit:i.unit,stock:i.qty,id:i.id,source:'inv'}; });
   var invKeys=new Set(DATA.inventory.map(function(i){ return i.name+'__'+i.unit; }));
   var recentKeys=new Set();
   var recentItems=[];
-  DATA.groceries.forEach(function(g){ var k=g.name+'__'+g.unit; if(!invKeys.has(k)&&!recentKeys.has(k)){ recentKeys.add(k); recentItems.push({name:g.name,unit:g.unit,stock:null,source:'grocery'}); } });
+  DATA.groceries.forEach(function(g){
+    var k=g.name+'__'+g.unit;
+    if(!invKeys.has(k)&&!recentKeys.has(k)){ recentKeys.add(k); recentItems.push({name:g.name,unit:g.unit,stock:null,source:'grocery'}); }
+  });
   qmAllItems=invItems.concat(recentItems);
   var el=document.getElementById('qm-ingr-list'); if(!el) return;
-  if(!qmAllItems.length){ el.innerHTML='<div style="color:var(--text2);font-size:13px">先新增庫存或買菜紀錄，食材就會出現在這裡</div>'; return; }
+  if(!qmAllItems.length){
+    el.innerHTML='<div style="color:var(--text2);font-size:13px">先新增庫存或買菜紀錄，食材就會出現在這裡</div>';
+    return;
+  }
   el.innerHTML=qmAllItems.map(function(item,i){
-    return '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:2px solid var(--border)">' +
-      '<input type="checkbox" id="qmc-'+i+'" onchange="toggleQmRow('+i+')" style="width:20px;height:20px;accent-color:var(--gold);flex-shrink:0;cursor:pointer">' +
-      '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700">'+item.name+'</div>' +
-      '<div style="font-size:11px;color:var(--text2);">'+(item.stock!==null?'庫存 '+item.stock+item.unit:'近期買菜')+'</div></div>' +
-      '<div style="display:flex;align-items:center;gap:6px;opacity:.3;transition:opacity .15s" id="qmw-'+i+'">' +
-        '<input type="number" id="qmq-'+i+'" placeholder="用量" step="0.1" inputmode="decimal" style="width:72px;font-size:14px;padding:7px 10px" oninput="updateQmCost()">' +
-        '<span style="font-size:12px;color:var(--text2);font-weight:700;flex-shrink:0">'+item.unit+'</span>' +
-      '</div></div>';
+    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:2px solid var(--border)">'
+      +'<input type="checkbox" id="qmc-'+i+'" style="width:22px;height:22px;accent-color:var(--gold);flex-shrink:0;cursor:pointer">'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-size:15px;font-weight:700">'+item.name+'</div>'
+      +'<div style="font-size:11px;color:var(--text2);">'+(item.stock!==null?'庫存 '+item.stock+item.unit:'近期買菜')+'</div>'
+      +'</div>'
+      +'</div>';
   }).join('');
 }
 function toggleQmRow(i){
@@ -1571,16 +1545,15 @@ function toggleQmRow(i){
 }
 function addQmExtra(){
   var name=document.getElementById('qm-extra-name').value.trim();
-  var cost=parseFloat(document.getElementById('qm-extra-cost').value)||0;
   if(!name){ toast('請輸入食材名稱'); return; }
   if(!STATE.qmExtras) STATE.qmExtras=[];
-  STATE.qmExtras.push({name:name,cost:cost});
-  document.getElementById('qm-extra-name').value=''; document.getElementById('qm-extra-cost').value='';
-  renderQmExtras(); updateQmCost();
+  STATE.qmExtras.push({name:name});
+  document.getElementById('qm-extra-name').value='';
+  renderQmExtras();
 }
 function removeQmExtra(i){ STATE.qmExtras.splice(i,1); renderQmExtras(); updateQmCost(); }
 function renderQmExtras(){
-  document.getElementById('qm-extra-tags').innerHTML=(STATE.qmExtras||[]).map(function(x,i){ return '<span class="tag mint">'+x.name+' $'+x.cost+'<button onclick="removeQmExtra('+i+')">×</button></span>'; }).join('');
+  document.getElementById('qm-extra-tags').innerHTML=(STATE.qmExtras||[]).map(function(x,i){ return '<span class="tag mint">'+x.name+'<button onclick="removeQmExtra('+i+')">×</button></span>'; }).join('');
 }
 function updateQmCost(){
   var total=0;
@@ -1594,31 +1567,51 @@ function updateQmCost(){
   document.getElementById('qm-cost').textContent='$'+total.toFixed(0);
 }
 function saveQuickMeal(){
-  var ingrs=[]; var deductList=[];
+  // Collect checked items
+  var ingrs=[], deductList=[];
   qmAllItems.forEach(function(item,i){
-    var cb=document.getElementById('qmc-'+i); var qty=parseFloat(document.getElementById('qmq-'+i)&&document.getElementById('qmq-'+i).value)||0;
-    if(!cb||!cb.checked||!qty) return;
-    var match=DATA.groceries.find(function(g){ return g.name===item.name&&g.unit===item.unit; });
-    var cost=match?parseFloat(((match.price/match.qty)*qty).toFixed(1)):0;
-    ingrs.push({name:item.name,qty:qty,unit:item.unit,cost:cost,groceryId:match?match.id:null});
-    if(item.source==='inv') deductList.push({name:item.name,unit:item.unit,qty:qty});
+    var cb=document.getElementById('qmc-'+i);
+    if(!cb||!cb.checked) return;
+    ingrs.push({name:item.name,unit:item.unit});
+    if(item.source==='inv') deductList.push({name:item.name,unit:item.unit});
   });
-  (STATE.qmExtras||[]).forEach(function(x){ ingrs.push({name:x.name,qty:1,unit:'',cost:x.cost,groceryId:null}); });
+  // Add extras
+  (STATE.qmExtras||[]).forEach(function(x){ ingrs.push({name:x.name,unit:''}); });
   if(!ingrs.length){ toast('請至少勾選一項食材'); return; }
-  var name=document.getElementById('qm-name').value.trim()||'一餐';
-  var sv=parseFloat(document.getElementById('qm-sv').value)||2;
-  var svUnit=document.getElementById('qm-sv-unit').value;
-  var totalCost=ingrs.reduce(function(a,x){ return a+x.cost; },0);
-  DATA.recipes.unshift({id:Date.now(),name:name,type:'🥘',date:document.getElementById('qm-date').value||today,servings:sv,servingsUnit:svUnit,time:0,ingredients:ingrs,steps:[],totalCost:Math.round(totalCost),costPerUnit:parseFloat((totalCost/sv).toFixed(1)),note:'快速記錄',rating:0});
-  var deducted=0;
-  deductList.forEach(function(d){ var idx=DATA.inventory.findIndex(function(i){ return i.name===d.name&&i.unit===d.unit; }); if(idx>=0){ DATA.inventory[idx].qty=Math.max(0,parseFloat((DATA.inventory[idx].qty-d.qty).toFixed(2))); DATA.inventory[idx].lastUpdated=today; deducted++; } });
-  save();
-  document.getElementById('qm-name').value=''; document.getElementById('qm-sv').value='2'; STATE.qmExtras=[];
-  renderQmExtras(); renderQM(); updateTopSub();
-  toast('已記錄「'+name+'」，扣除 '+deducted+' 項庫存 ✓');
-}
 
-// ── Saved Recipes ─────────────────────────────────────
+  var name=document.getElementById('qm-name').value.trim()||'一餐';
+  var date=document.getElementById('qm-date').value||today;
+
+  // Save as recipe record (simplified - no cost/rating)
+  var rec={
+    id:Date.now(), name:name, type:'🥘', date:date,
+    servings:1, servingsUnit:'餐',
+    time:0, ingredients:ingrs, steps:[], totalCost:0, costPerUnit:0,
+    note:'', rating:0
+  };
+  DATA.recipes.unshift(rec);
+
+  // Deduct inventory (just mark as used, don't track exact qty)
+  var deducted=0;
+  deductList.forEach(function(d){
+    var idx=DATA.inventory.findIndex(function(i){ return i.name===d.name&&i.unit===d.unit; });
+    if(idx>=0){
+      // Deduct a small amount to mark as used, or zero out if unknown
+      // Just mark lastUsed date so user knows it was used
+      DATA.inventory[idx].lastUp=date;
+      deducted++;
+    }
+  });
+
+  saveData();
+  // Reset form
+  document.getElementById('qm-name').value='';
+  STATE.qmExtras=[];
+  renderQmExtras();
+  renderQM();
+  updateTopSub();
+  toast('已記錄「'+name+'」✓ 使用 '+ingrs.length+' 項食材');
+}
 function saveSavedRecipe(){
   var name=document.getElementById('sv-name').value.trim(); if(!name){ toast('請輸入名稱'); return; }
   var obj={id:STATE.editSvId||Date.now(),name:name,type:document.getElementById('sv-type').value,level:document.getElementById('sv-level').value,source:document.getElementById('sv-source').value.trim(),ingredients:document.getElementById('sv-ingr').value.trim(),steps:document.getElementById('sv-steps').value.trim(),tags:(document.getElementById('sv-tags').value||'').split(/\s+/).filter(Boolean)};
